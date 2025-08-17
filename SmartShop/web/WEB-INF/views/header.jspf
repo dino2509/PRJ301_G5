@@ -1,0 +1,42 @@
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<!DOCTYPE html><html lang="vi"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="<c:url value='/assets/css/style.css'/>">
+<title><c:out value='${title}'/></title>
+</head><body>
+<header>
+  <a href="<c:url value='/home'/>">SmartShop</a>
+  <form action="<c:url value='/home'/>" method="get">
+    <input name="q" value="${param.q}" placeholder="Tìm ki?m..."/>
+    <button type="submit">Search</button>
+  </form>
+  <nav>
+    <a href="<c:url value='/cart'/>">Gi? hàng</a>
+    <c:choose>
+      <c:when test="${not empty sessionScope.auth}">
+        <a href="<c:url value='/profile'/>">Tài kho?n</a>
+        <a href="<c:url value='/logout'/>">??ng xu?t</a>
+      </c:when>
+      <c:otherwise>
+        <a href="<c:url value='/login'/>">??ng nh?p</a>
+        <a href="<c:url value='/forgot'/>">Quên m?t kh?u</a>
+      </c:otherwise>
+    </c:choose>
+  </nav>
+</header>
+<main>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  document.querySelectorAll('input[type="password"]').forEach(function(input){
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = 'Hi?n';
+    btn.style.marginLeft='6px';
+    btn.addEventListener('click', function(){
+      if(input.type==='password'){ input.type='text'; btn.textContent='?n'; }
+      else { input.type='password'; btn.textContent='Hi?n'; }
+    });
+    input.insertAdjacentElement('afterend', btn);
+  });
+});
+</script>
