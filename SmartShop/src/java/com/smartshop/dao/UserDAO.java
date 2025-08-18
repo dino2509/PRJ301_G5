@@ -21,14 +21,23 @@ public class UserDAO {
         return u;
     }
 
+    // --- Finders ---
+    public User findById(int id) {
+        String sql = "SELECT * FROM Users WHERE id=?";
+        try (Connection cn = DBContext.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) { if (rs.next()) return map(rs); }
+        } catch (Exception e) { e.printStackTrace(); }
+        return null;
+    }
+
     public User findByUsername(String username) {
         String sql = "SELECT * FROM Users WHERE username=?";
         try (Connection cn = DBContext.getConnection();
              PreparedStatement ps = cn.prepareStatement(sql)) {
             ps.setString(1, username);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return map(rs);
-            }
+            try (ResultSet rs = ps.executeQuery()) { if (rs.next()) return map(rs); }
         } catch (Exception e) { e.printStackTrace(); }
         return null;
     }
@@ -38,9 +47,7 @@ public class UserDAO {
         try (Connection cn = DBContext.getConnection();
              PreparedStatement ps = cn.prepareStatement(sql)) {
             ps.setString(1, email);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return map(rs);
-            }
+            try (ResultSet rs = ps.executeQuery()) { if (rs.next()) return map(rs); }
         } catch (Exception e) { e.printStackTrace(); }
         return null;
     }
@@ -55,13 +62,12 @@ public class UserDAO {
         return false;
     }
 
-    public boolean create(User u, String rawPassword) {
-        return createWithError(u, rawPassword) == null;
-    }
+    // --- Create ---
+    public boolean create(User u, String rawPassword) { return createWithError(u, rawPassword) == null; }
 
     public String createWithError(User u, String rawPassword) {
         String sql = "INSERT INTO Users(username,password_hash,email,phone,full_name,role,active) VALUES(?,?,?,?,?,?,1)";
-        String hash = BCrypt.hashpw(rawPassword, BCrypt.gensalt()); // sinh hash tương thích thư viện hiện tại
+        String hash = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
         try (Connection cn = DBContext.getConnection();
              PreparedStatement ps = cn.prepareStatement(sql)) {
             ps.setString(1, u.getUsername());
@@ -72,46 +78,36 @@ public class UserDAO {
             ps.setString(6, u.getRole() == null ? "CUSTOMER" : u.getRole());
             ps.executeUpdate();
             return null;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return e.getMessage();
-        }
+        } catch (Exception e) { e.printStackTrace(); return e.getMessage(); }
     }
 
-    /** Login với chế độ tương thích:
-     *  - Nếu password_hash là bcrypt ($2*): dùng BCrypt.checkpw
-     *  - Nếu password_hash là plain: so chuỗi, rồi nâng cấp sang bcrypt ngay
-     */
+    // --- Auth with compatibility (plain -> bcrypt upgrade) ---
     public User authenticate(String username, String rawPassword) {
         String sql = "SELECT * FROM Users WHERE username=? AND active=1";
         try (Connection cn = DBContext.getConnection();
-             PreparedStatement ps = cn.prepareStatement(sql,
-                     ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE)) {
+             PreparedStatement ps = cn.prepareStatement(sql)) {
             ps.setString(1, username);
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) return null;
-                String stored = rs.getString("password_hash");
+                User u = map(rs);
+                String stored = u.getPasswordHash();
                 boolean ok;
                 if (stored != null && stored.startsWith("$2")) {
                     ok = BCrypt.checkpw(rawPassword, stored);
                 } else {
                     ok = rawPassword != null && rawPassword.equals(stored);
-                    if (ok) { // nâng cấp về bcrypt
-                        String newHash = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
-                        try (PreparedStatement up = cn.prepareStatement(
-                                "UPDATE Users SET password_hash=? WHERE id=?")) {
-                            up.setString(1, newHash);
-                            up.setInt(2, rs.getInt("id"));
-                            up.executeUpdate();
-                        }
+                    if (ok) { // nâng cấp sang bcrypt
+                        changePassword(u.getId(), rawPassword);
+                        u = findById(u.getId());
                     }
                 }
-                return ok ? map(rs) : null;
+                return ok ? u : null;
             }
         } catch (Exception e) { e.printStackTrace(); }
         return null;
     }
 
+    // --- Profile / Password ---
     public boolean updateProfile(User u) {
         String sql = "UPDATE Users SET email=?, phone=?, full_name=? WHERE id=?";
         try (Connection cn = DBContext.getConnection();
@@ -126,7 +122,7 @@ public class UserDAO {
     }
 
     public boolean changePassword(int userId, String newRawPassword) {
-        String sql = "UPDATE Users SET password_hash=?, reset_token=NULL, reset_expires=NULL WHERE id=?";
+        String sql = "UPDATE Users SET password_hash=?, reset_token=NULL, reset_code=NULL, reset_expires=NULL WHERE id=?";
         String hash = BCrypt.hashpw(newRawPassword, BCrypt.gensalt());
         try (Connection cn = DBContext.getConnection();
              PreparedStatement ps = cn.prepareStatement(sql)) {
@@ -137,67 +133,49 @@ public class UserDAO {
         return false;
     }
 
-    public boolean saveResetToken(int userId, String token, LocalDateTime expires) {
-        String sql = "UPDATE Users SET reset_token=?, reset_expires=? WHERE id=?";
+    // --- Reset challenge (token + 6-digit code) ---
+    public boolean saveResetChallenge(int userId, String token, String code, LocalDateTime expires) {
+        String sql = "UPDATE Users SET reset_token=?, reset_code=?, reset_expires=? WHERE id=?";
         try (Connection cn = DBContext.getConnection();
              PreparedStatement ps = cn.prepareStatement(sql)) {
             ps.setString(1, token);
-            ps.setTimestamp(2, Timestamp.valueOf(expires));
-            ps.setInt(3, userId);
+            ps.setString(2, code);
+            ps.setTimestamp(3, Timestamp.valueOf(expires));
+            ps.setInt(4, userId);
             return ps.executeUpdate() == 1;
         } catch (Exception e) { e.printStackTrace(); }
         return false;
     }
 
-
-
-    /** Dùng cho servlet reset admin */
-    public boolean forceSetPassword(int userId, String rawPassword) {
-        return changePassword(userId, rawPassword);
+    public User findByResetToken(String token) {
+        String sql = "SELECT * FROM Users WHERE reset_token=? AND reset_expires>SYSDATETIME()";
+        try (Connection cn = DBContext.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setString(1, token);
+            try (ResultSet rs = ps.executeQuery()) { if (rs.next()) return map(rs); }
+        } catch (Exception e) { e.printStackTrace(); }
+        return null;
     }
-    
-    public boolean saveResetChallenge(int userId, String token, String code, LocalDateTime expires) {
-    String sql = "UPDATE Users SET reset_token=?, reset_code=?, reset_expires=? WHERE id=?";
-    try (Connection cn = DBContext.getConnection();
-         PreparedStatement ps = cn.prepareStatement(sql)) {
-        ps.setString(1, token);
-        ps.setString(2, code);
-        ps.setTimestamp(3, Timestamp.valueOf(expires));
-        ps.setInt(4, userId);
-        return ps.executeUpdate() == 1;
-    } catch (Exception e) { e.printStackTrace(); }
-    return false;
-}
 
-// Tìm theo token còn hạn
-public User findByResetToken(String token) {
-    String sql = "SELECT * FROM Users WHERE reset_token=? AND reset_expires>SYSDATETIME()";
-    try (Connection cn = DBContext.getConnection();
-         PreparedStatement ps = cn.prepareStatement(sql)) {
-        ps.setString(1, token);
-        try (ResultSet rs = ps.executeQuery()) { if (rs.next()) return map(rs); }
-    } catch (Exception e) { e.printStackTrace(); }
-    return null;
-}
+    public User findByResetCode(String code) {
+        String sql = "SELECT * FROM Users WHERE reset_code=? AND reset_expires>SYSDATETIME()";
+        try (Connection cn = DBContext.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setString(1, code);
+            try (ResultSet rs = ps.executeQuery()) { if (rs.next()) return map(rs); }
+        } catch (Exception e) { e.printStackTrace(); }
+        return null;
+    }
 
-// Tìm theo mã 6 số còn hạn
-public User findByResetCode(String code) {
-    String sql = "SELECT * FROM Users WHERE reset_code=? AND reset_expires>SYSDATETIME()";
-    try (Connection cn = DBContext.getConnection();
-         PreparedStatement ps = cn.prepareStatement(sql)) {
-        ps.setString(1, code);
-        try (ResultSet rs = ps.executeQuery()) { if (rs.next()) return map(rs); }
-    } catch (Exception e) { e.printStackTrace(); }
-    return null;
-}
+    public void clearResetToken(int userId) {
+        String sql = "UPDATE Users SET reset_token=NULL, reset_code=NULL, reset_expires=NULL WHERE id=?";
+        try (Connection cn = DBContext.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.executeUpdate();
+        } catch (Exception e) { e.printStackTrace(); }
+    }
 
-// Xoá cả token + code + hạn sau khi đổi mật khẩu
-public void clearResetToken(int userId) {
-    String sql = "UPDATE Users SET reset_token=NULL, reset_code=NULL, reset_expires=NULL WHERE id=?";
-    try (Connection cn = DBContext.getConnection();
-         PreparedStatement ps = cn.prepareStatement(sql)) {
-        ps.setInt(1, userId);
-        ps.executeUpdate();
-    } catch (Exception e) { e.printStackTrace(); }
-}
+    // tuỳ chọn: dùng để ép đặt mật khẩu khi cần
+    public boolean forceSetPassword(int userId, String rawPassword) { return changePassword(userId, rawPassword); }
 }
