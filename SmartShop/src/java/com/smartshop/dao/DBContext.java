@@ -4,7 +4,7 @@ import java.sql.*;
 
 public class DBContext {
     private static final String URL =
-        "jdbc:sqlserver://localhost:1433;databaseName=SmartShop;encrypt=true;trustServerCertificate=true";
+        "jdbc:sqlserver://192.168.137.1:1433;databaseName=SmartShop;encrypt=true;trustServerCertificate=true";
     private static final String USER = "sa";
     private static final String PASS = "sa";
 

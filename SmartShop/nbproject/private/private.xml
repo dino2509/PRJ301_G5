@@ -3,10 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/src/java/smtp.properties</file>
             <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/web/WEB-INF/views/forgot.jsp</file>
             <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/src/java/com/smartshop/dao/UserDAO.java</file>
             <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/src/java/com/smartshop/dao/DBContext.java</file>
+            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/web/WEB-INF/views/login.jsp</file>
             <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/src/java/com/smartshop/util/EmailUtil.java</file>
             <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/web/WEB-INF/views/reset.jsp</file>
             <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/src/java/com/smartshop/servlet/AuthController.java</file>
