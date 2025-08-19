@@ -141,7 +141,7 @@ public class AuthController extends HttpServlet {
                         boolean sent = EmailUtil.send(email, "Đặt lại mật khẩu SmartShop", html);
                         if (!sent) req.setAttribute("devResetLink", link);
                     }
-                    req.setAttribute("msg","Nếu email tồn tại, mã và liên kết đặt lại đã được gửi.");
+                    req.setAttribute("msg","Mã và liên kết đặt lại đã được gửi qua email.");
                     req.getRequestDispatcher("/WEB-INF/views/forgot.jsp").forward(req, resp);
                 } else if ("verify".equals(action)) {
                     String code = req.getParameter("code");

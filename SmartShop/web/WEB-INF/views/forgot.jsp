@@ -8,7 +8,7 @@
   <p><b>Dev:</b> SMTP chưa cấu hình. Link đặt lại: <a href="${devResetLink}">${devResetLink}</a></p>
 </c:if>
 
-<h3>1) Nhận mã & liên kết qua email</h3>
+<h3>Nhận mã & liên kết qua email</h3>
 <form method="post" action="forgot" autocomplete="off">
   <input type="hidden" name="action" value="request"/>
   <!-- Giữ lại email đã nhập sau khi bấm "Gửi email" -->
