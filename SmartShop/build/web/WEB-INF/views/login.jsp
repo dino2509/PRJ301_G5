@@ -4,7 +4,7 @@
 <h2>Đăng nhập</h2>
 <p style="color:red">${error}</p>
 <form method="post" action="login">
-  <input name="username" placeholder="username" required />
+  <input name="username" value="${param.username}" placeholder="username" required />
   <input name="password" type="password" placeholder="password" required />
   <button>Đăng nhập</button>
 </form>
