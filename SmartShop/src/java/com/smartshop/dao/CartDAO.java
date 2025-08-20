@@ -1,7 +1,15 @@
 package com.smartshop.dao;
-import com.smartshop.model.CartItem; import com.smartshop.util.DB; import java.sql.*; import java.util.*; import java.math.*;
+
+import com.smartshop.model.CartItem;
+import com.smartshop.util.DB;
+
+import java.math.BigDecimal;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CartDAO {
+    
     private CartItem map(ResultSet rs) throws SQLException {
         CartItem ci=new CartItem();
         ci.setId(rs.getInt("id")); ci.setProductId(rs.getInt("product_id")); ci.setProductName(rs.getString("name"));
@@ -9,32 +17,161 @@ public class CartDAO {
         return ci;
     }
 
-    private int getOpenCartId(Connection c, int userId) throws SQLException {
-        try (PreparedStatement ps = c.prepareStatement("SELECT TOP 1 id FROM Carts WHERE user_id=? AND status='OPEN'")) {
+
+    // ---------- Public safe wrappers (không ném lỗi ra ngoài) ----------
+    public static BigDecimal safeGetProductPrice(int productId, BigDecimal fallback) {
+        try (Connection cn = DB.getConnection()) {
+            BigDecimal p = getProductPrice(cn, productId);
+            return p != null ? p : fallback;
+        } catch (Exception e) {
+            return fallback;
+        }
+    }
+
+    public static void safeAddItemForUser(int userId, int productId, int qty, BigDecimal unitPrice) {
+        try (Connection cn = DB.getConnection()) {
+            cn.setAutoCommit(false);
+            int cartId = ensureOpenCart(cn, userId);
+            upsertItemIncrement(cn, cartId, productId, qty, unitPrice);
+            cn.commit();
+        } catch (Exception ignore) {}
+    }
+
+    public static void safeSetItemQtyForUser(int userId, int productId, int qty, BigDecimal unitPrice) {
+        try (Connection cn = DB.getConnection()) {
+            cn.setAutoCommit(false);
+            int cartId = ensureOpenCart(cn, userId);
+            setItemQty(cn, cartId, productId, qty, unitPrice);
+            cn.commit();
+        } catch (Exception ignore) {}
+    }
+
+    public static void safeRemoveItemForUser(int userId, int productId) {
+        try (Connection cn = DB.getConnection()) {
+            int cartId = getOpenCartId(cn, userId);
+            if (cartId > 0) removeItem(cn, cartId, productId);
+        } catch (Exception ignore) {}
+    }
+
+    // ---------- Core helpers ----------
+    private static int ensureOpenCart(Connection cn, int userId) throws SQLException {
+        int id = getOpenCartId(cn, userId);
+        if (id > 0) return id;
+        try (PreparedStatement ps = cn.prepareStatement(
+                "INSERT INTO dbo.Carts(user_id,status) VALUES(?, 'OPEN');",
+                Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, userId);
-            try (ResultSet rs=ps.executeQuery()) { if (rs.next()) return rs.getInt(1);}
-        }
-        try (PreparedStatement ps = c.prepareStatement("INSERT INTO Carts(user_id) VALUES(?)", Statement.RETURN_GENERATED_KEYS)) {
-            ps.setInt(1, userId); ps.executeUpdate(); try(ResultSet k=ps.getGeneratedKeys()){ k.next(); return k.getInt(1);}
-        }
-    }
-
-    public void addItem(int userId, int productId, int qty) {
-        String upsert = "MERGE CartItems AS tgt " +
-                        "USING (SELECT ? AS cart_id, ? AS product_id) src " +
-                        "ON tgt.cart_id=src.cart_id AND tgt.product_id=src.product_id " +
-                        "WHEN MATCHED THEN UPDATE SET qty=tgt.qty+? " +
-                        "WHEN NOT MATCHED THEN INSERT(cart_id,product_id,qty,unit_price) " +
-                        "SELECT src.cart_id, src.product_id, ?, p.price FROM Products p WHERE p.id=src.product_id;";
-        try(Connection c=DB.getConnection()){
-            int cartId = getOpenCartId(c, userId);
-            try(PreparedStatement ps=c.prepareStatement(upsert)){
-                ps.setInt(1, cartId); ps.setInt(2, productId); ps.setInt(3, qty); ps.setInt(4, qty); ps.executeUpdate();
+            ps.executeUpdate();
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) return rs.getInt(1);
             }
-        } catch(SQLException e){ throw new RuntimeException(e);}
+        }
+        // Fallback select
+        return getOpenCartId(cn, userId);
     }
 
-    public List<CartItem> listItems(int userId){
+    private static int getOpenCartId(Connection cn, int userId) throws SQLException {
+        try (PreparedStatement ps = cn.prepareStatement(
+                "SELECT TOP 1 id FROM dbo.Carts WHERE user_id=? AND status='OPEN' ORDER BY id DESC")) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getInt(1) : 0;
+            }
+        }
+    }
+
+    private static BigDecimal getProductPrice(Connection cn, int productId) throws SQLException {
+        try (PreparedStatement ps = cn.prepareStatement(
+                "SELECT price FROM dbo.Products WHERE id=?")) {
+            ps.setInt(1, productId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getBigDecimal(1) : null;
+            }
+        }
+    }
+
+    private static String qtyCol(Connection cn) throws SQLException {
+        // Tương thích cả schema có 'quantity' hoặc 'qty'
+        try (PreparedStatement ps = cn.prepareStatement(
+                "SELECT CASE WHEN EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.CartItems') AND name='quantity') THEN 'quantity' ELSE 'qty' END")) {
+            try (ResultSet rs = ps.executeQuery()) {
+                rs.next();
+                return rs.getString(1);
+            }
+        }
+    }
+
+    private static boolean itemExists(Connection cn, int cartId, int productId) throws SQLException {
+        try (PreparedStatement ps = cn.prepareStatement(
+                "SELECT 1 FROM dbo.CartItems WHERE cart_id=? AND product_id=?")) {
+            ps.setInt(1, cartId);
+            ps.setInt(2, productId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    private static void upsertItemIncrement(Connection cn, int cartId, int productId, int qty, BigDecimal unitPrice) throws SQLException {
+        String qc = qtyCol(cn);
+        if (itemExists(cn, cartId, productId)) {
+            String sql = "UPDATE dbo.CartItems SET " + qc + " = " + qc + " + ?, unit_price=? WHERE cart_id=? AND product_id=?";
+            try (PreparedStatement ps = cn.prepareStatement(sql)) {
+                ps.setInt(1, qty);
+                ps.setBigDecimal(2, unitPrice);
+                ps.setInt(3, cartId);
+                ps.setInt(4, productId);
+                ps.executeUpdate();
+            }
+        } else {
+            String sql = "INSERT INTO dbo.CartItems(cart_id, product_id, " + qc + ", unit_price) VALUES(?,?,?,?)";
+            try (PreparedStatement ps = cn.prepareStatement(sql)) {
+                ps.setInt(1, cartId);
+                ps.setInt(2, productId);
+                ps.setInt(3, qty);
+                ps.setBigDecimal(4, unitPrice);
+                ps.executeUpdate();
+            }
+        }
+    }
+
+    private static void setItemQty(Connection cn, int cartId, int productId, int qty, BigDecimal unitPrice) throws SQLException {
+        String qc = qtyCol(cn);
+        if (qty <= 0) {
+            removeItem(cn, cartId, productId);
+            return;
+        }
+        if (itemExists(cn, cartId, productId)) {
+            String sql = "UPDATE dbo.CartItems SET " + qc + "=?, unit_price=? WHERE cart_id=? AND product_id=?";
+            try (PreparedStatement ps = cn.prepareStatement(sql)) {
+                ps.setInt(1, qty);
+                ps.setBigDecimal(2, unitPrice);
+                ps.setInt(3, cartId);
+                ps.setInt(4, productId);
+                ps.executeUpdate();
+            }
+        } else {
+            String sql = "INSERT INTO dbo.CartItems(cart_id, product_id, " + qc + ", unit_price) VALUES(?,?,?,?)";
+            try (PreparedStatement ps = cn.prepareStatement(sql)) {
+                ps.setInt(1, cartId);
+                ps.setInt(2, productId);
+                ps.setInt(3, qty);
+                ps.setBigDecimal(4, unitPrice);
+                ps.executeUpdate();
+            }
+        }
+    }
+
+    private static void removeItem(Connection cn, int cartId, int productId) throws SQLException {
+        try (PreparedStatement ps = cn.prepareStatement(
+                "DELETE FROM dbo.CartItems WHERE cart_id=? AND product_id=?")) {
+            ps.setInt(1, cartId);
+            ps.setInt(2, productId);
+            ps.executeUpdate();
+        }
+    }
+    
+        public List<CartItem> listItems(int userId){
         String sql="SELECT ci.*, p.name, p.image_url FROM CartItems ci " +
                    "JOIN Carts c ON ci.cart_id=c.id JOIN Products p ON ci.product_id=p.id " +
                    "WHERE c.user_id=? AND c.status='OPEN' ORDER BY ci.id";
@@ -66,10 +203,5 @@ public class CartDAO {
             ps.setInt(1,userId); try(ResultSet rs=ps.executeQuery()){ if(rs.next() && rs.getBigDecimal(1)!=null) return rs.getBigDecimal(1); }
         } catch(SQLException e){ throw new RuntimeException(e);}
         return BigDecimal.ZERO;
-    }
-
-    public int getOpenCartId(int userId){
-        try(Connection c=DB.getConnection()){ return getOpenCartId(c,userId);}
-        catch(SQLException e){ throw new RuntimeException(e);}
     }
 }
