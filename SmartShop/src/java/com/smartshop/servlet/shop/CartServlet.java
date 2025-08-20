@@ -1,34 +1,73 @@
 package com.smartshop.servlet.shop;
-import com.smartshop.dao.CartDAO; import com.smartshop.model.CartItem; import jakarta.servlet.*; import jakarta.servlet.http.*; import jakarta.servlet.annotation.*; import java.io.*; import java.util.*;
 
-@WebServlet(urlPatterns = {"/cart/view","/cart/add","/cart/update","/cart/remove"})
+import com.smartshop.model.CartItem;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
+import jakarta.servlet.RequestDispatcher;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.*;
+
+@WebServlet(urlPatterns = {"/cart","/cart/*","/cart/add","/cart/update","/cart/remove"})
 public class CartServlet extends HttpServlet {
-    private final CartDAO cartDAO = new CartDAO();
-    private int uid(HttpServletRequest req){ return (Integer)req.getSession().getAttribute("uid"); }
+    private static final String VIEW_CART = "/WEB-INF/views/shop/cart.jsp";
 
-    @Override protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String path = req.getServletPath();
-        if ("/cart/view".equals(path)) {
-            java.util.List<CartItem> items = cartDAO.listItems(uid(req));
-            req.setAttribute("items", items);
-            req.setAttribute("total", cartDAO.total(uid(req)));
-            req.getRequestDispatcher("/WEB-INF/views/shop/cart.jsp").forward(req, resp);
-        } else if ("/cart/add".equals(path)) {
-            int pid = Integer.parseInt(req.getParameter("pid"));
-            int qty = Integer.parseInt(req.getParameter("qty")==null? "1" : req.getParameter("qty"));
-            cartDAO.addItem(uid(req), pid, qty);
-            resp.sendRedirect(req.getContextPath()+"/cart/view");
-        } else if ("/cart/remove".equals(path)) {
-            int itemId = Integer.parseInt(req.getParameter("id")); cartDAO.removeItem(uid(req), itemId);
-            resp.sendRedirect(req.getContextPath()+"/cart/view");
-        } else { resp.sendError(404); }
+    @SuppressWarnings("unchecked")
+    private Map<Integer, CartItem> getCart(HttpSession session) {
+        Object o = session.getAttribute("cart");
+        if (o == null) {
+            Map<Integer, CartItem> cart = new LinkedHashMap<>();
+            session.setAttribute("cart", cart);
+            return cart;
+        }
+        return (Map<Integer, CartItem>) o;
     }
 
-    @Override protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if ("/cart/update".equals(req.getServletPath())) {
-            int id=Integer.parseInt(req.getParameter("id")); int qty=Integer.parseInt(req.getParameter("qty"));
-            cartDAO.updateQty(uid(req), id, qty);
-            resp.sendRedirect(req.getContextPath()+"/cart/view");
-        } else { resp.sendError(405); }
+    @Override protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        String p = req.getServletPath();
+        if ("/cart".equals(p)) {
+            req.getRequestDispatcher(VIEW_CART).forward(req, resp);
+            return;
+        }
+        doAction(req, resp); // hỗ trợ GET cho add/update/remove
     }
+
+    @Override protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        doAction(req, resp);
+    }
+
+    private void doAction(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        String p = req.getServletPath();
+        Map<Integer, CartItem> cart = getCart(req.getSession());
+
+        int id = parseInt(req.getParameter("id"), -1);
+        int qty = parseInt(req.getParameter("qty"), 1);
+        if (qty < 1) qty = 1;
+
+        switch (p) {
+            case "/cart/add": {
+                CartItem item = cart.getOrDefault(id,
+                        new CartItem(id, "Product #" + id, new BigDecimal("1.00"), 0, null));
+                item.setQuantity(item.getQuantity() + qty);
+                cart.put(id, item);
+                break;
+            }
+            case "/cart/update": {
+                CartItem item = cart.get(id);
+                if (item != null) item.setQuantity(qty);
+                break;
+            }
+            case "/cart/remove": {
+                cart.remove(id);
+                break;
+            }
+            default: break;
+        }
+        resp.sendRedirect(req.getContextPath() + "/cart");
+    }
+
+    private int parseInt(String s, int defVal) { try { return Integer.parseInt(s); } catch (Exception e) { return defVal; } }
 }

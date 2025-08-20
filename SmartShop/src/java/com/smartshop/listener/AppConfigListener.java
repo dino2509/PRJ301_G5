@@ -1,17 +1,15 @@
 package com.smartshop.listener;
 
 import com.smartshop.util.DB;
-import jakarta.servlet.*;
-import java.sql.*;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.annotation.WebListener;
 
+@WebListener
 public class AppConfigListener implements ServletContextListener {
-    @Override public void contextInitialized(ServletContextEvent sce) {
-        ServletContext ctx = sce.getServletContext();
-        String url = ctx.getInitParameter("JDBC_URL");
-        String user = ctx.getInitParameter("JDBC_USER");
-        String pass = ctx.getInitParameter("JDBC_PASS");
-        DB.configure(url, user, pass);
-        try { Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver"); }
-        catch (ClassNotFoundException e) { throw new RuntimeException(e); }
+    @Override
+    public void contextInitialized(ServletContextEvent sce) {
+        // Khởi tạo cấu hình DB từ <context-param> trong web.xml
+        DB.initFromContext(sce.getServletContext());
     }
 }

@@ -10,6 +10,20 @@ public class CartItem {
     private String imageUrl;
     private BigDecimal unitPrice;
     private int qty;
+    private String name;
+    private BigDecimal price;
+    private int quantity;   
+    
+    public CartItem() {}
+
+    public CartItem(int productId, String name, BigDecimal price, int quantity, String imageUrl) {
+        this.productId = productId;
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+        this.imageUrl = imageUrl;
+    }
+    
 
     public int getId() {
         return id;
@@ -62,4 +76,13 @@ public class CartItem {
     public BigDecimal getLineTotal() {
         return unitPrice.multiply(new java.math.BigDecimal(qty));
     }
+    
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public BigDecimal getPrice() { return price; }
+    public void setPrice(BigDecimal price) { this.price = price; }
+    public int getQuantity() { return quantity; }
+    public void setQuantity(int quantity) { this.quantity = quantity; }
+    
+    public BigDecimal getSubtotal() { return price.multiply(BigDecimal.valueOf(quantity)); }
 }

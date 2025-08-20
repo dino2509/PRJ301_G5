@@ -3,19 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/web/WEB-INF/views/auth/reset.jsp</file>
-            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/src/java/com/smartshop/servlet/auth/ForgotServlet.java</file>
             <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/web/WEB-INF/views/_includes/header.jspf</file>
-            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/src/java/com/smartshop/dao/UserDAO.java</file>
-            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/src/java/com/smartshop/servlet/auth/LoginServlet.java</file>
-            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/web/WEB-INF/web.xml</file>
-            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/web/WEB-INF/views/auth/reset_expired.jsp</file>
-            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/web/WEB-INF/views/auth/login.jsp</file>
-            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/src/java/com/smartshop/servlet/auth/ResetServlet.java</file>
-            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/web/WEB-INF/views/profile.jsp</file>
-            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/web/WEB-INF/views/auth/forgot.jsp</file>
             <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/web/WEB-INF/views/header.jspf</file>
-            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/src/java/com/smartshop/servlet/AuthController.java</file>
+            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/web/WEB-INF/views/shop/cart.jsp</file>
         </group>
     </open-files>
 </project-private>

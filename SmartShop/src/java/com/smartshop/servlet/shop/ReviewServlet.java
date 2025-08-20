@@ -1,18 +1,37 @@
 package com.smartshop.servlet.shop;
-import com.smartshop.dao.ReviewDAO; import jakarta.servlet.*; import jakarta.servlet.http.*; import jakarta.servlet.annotation.*; import java.io.*;
 
-@WebServlet(urlPatterns = "/product/review")
+import com.smartshop.dao.ReviewDAO;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
+import java.io.IOException;
+
+@WebServlet(urlPatterns={"/product/review"})
 public class ReviewServlet extends HttpServlet {
-    private final ReviewDAO dao=new ReviewDAO();
-    private int uid(HttpServletRequest req){ return (Integer)req.getSession().getAttribute("uid"); }
-    @Override protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setAttribute("pid", req.getParameter("productId"));
-        req.getRequestDispatcher("/WEB-INF/views/shop/review.jsp").forward(req, resp);
+    @Override protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        int productId = parseInt(req.getParameter("productId"), -1);
+        resp.sendRedirect(req.getContextPath() + "/product?id=" + productId);
     }
-    @Override protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        int pid=Integer.parseInt(req.getParameter("productId")); int rating=Integer.parseInt(req.getParameter("rating"));
-        String comment=req.getParameter("comment");
-        dao.upsert(uid(req), pid, rating, comment);
-        resp.sendRedirect(req.getContextPath()+"/product?id="+pid);
+
+    @Override protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        Integer uid = (Integer) req.getSession().getAttribute("uid");
+        if (uid == null) {
+            resp.sendRedirect(req.getContextPath() + "/login?next=" + req.getRequestURI());
+            return;
+        }
+        int productId = parseInt(req.getParameter("productId"), -1);
+        int rating = parseInt(req.getParameter("rating"), 5);
+        String comment = req.getParameter("comment");
+
+        try {
+            new ReviewDAO().upsert(productId, uid, rating, comment);
+            resp.sendRedirect(req.getContextPath() + "/product?id=" + productId + "&review=ok");
+        } catch (RuntimeException ex) {
+            resp.sendRedirect(req.getContextPath() + "/product?id=" + productId + "&review=fail");
+        }
     }
+
+    private int parseInt(String s, int defVal) { try { return Integer.parseInt(s); } catch (Exception e) { return defVal; } }
 }
