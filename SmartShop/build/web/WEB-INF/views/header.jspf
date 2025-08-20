@@ -96,18 +96,27 @@
     
 
     <!-- Danh mục -->
-    <a href="${pageContext.request.contextPath}/categories" class="cat-btn">
-      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
-      </svg>
-      Danh mục
-    </a>
+  <c:if test="${not empty categories}">
+    <select class="txt" onchange="if(this.value) location.href=this.value">
+      <option value="">Danh mục</option>
+      <c:forEach var="c" items="${categories}">
+        <option
+          value="${pageContext.request.contextPath}/products?categoryId=${c.id}"
+          <c:if test="${param.categoryId == c.id}">selected</c:if>>
+          ${c.name}
+        </option>
+      </c:forEach>
+    </select>
+  </c:if>
 
     <!-- Search -->
     <div class="search">
-      <form class="search-wrap" method="get" action="${pageContext.request.contextPath}/search">
-        <input name="q" placeholder="Nhập tên điện thoại, máy tính, phụ kiện... cần tìm" value="${param.q}">
-        <button class="search-btn" aria-label="Tìm kiếm">
+      <form class="search-wrap" method="get" action="${pageContext.request.contextPath}/products">
+        <input name="q" placeholder="Nhập tên điện thoại, máy tính, ... cần tìm" value="${param.q}">
+        <c:if test="${not empty param.categoryId}">
+          <input type="hidden" name="categoryId" value="${param.categoryId}"/>
+        </c:if>
+        <button type="submit" class="search-btn" aria-label="Tìm kiếm">
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M15.5 14h-.79l-.28-.27A6.5 6.5 0 1 0 14 15.5l.27.28v.79L20 21.5 21.5 20l-6-6zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/>
           </svg>
@@ -123,7 +132,7 @@
         </svg>
         Giỏ hàng
       </a>
-      <a class="avatar" href="${pageContext.request.contextPath}<c:choose><c:when test='${not empty sessionScope.auth}'>/profile</c:when><c:otherwise>/login</c:otherwise></c:choose>">
+      <a class="avatar" href="${pageContext.request.contextPath}<c:choose><c:when test='${not empty sessionScope.auth}'>/login</c:when><c:otherwise>/account</c:otherwise></c:choose>">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5z"/>
         </svg>

@@ -1,0 +1,61 @@
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+
+<style>
+  :root{--blue:#1976d2;--blue-600:#1565c0;--blue-700:#0d47a1}
+  .topbar{display:flex;align-items:center;gap:12px;padding:8px 0}
+  .grow{flex:1}
+  .right{margin-left:auto;display:flex;gap:12px}
+  .txt{padding:6px}
+  a{color:var(--blue);text-decoration:none}
+  a:hover{color:var(--blue-700);text-decoration:underline}
+  button{padding:6px 12px;border:1px solid var(--blue);background:var(--blue);color:#fff;cursor:pointer}
+  button:hover{background:var(--blue-600);border-color:var(--blue-600)}
+  select.txt, input.txt{border:1px solid var(--blue);outline-color:var(--blue)}
+</style>
+
+<header class="topbar">
+  <a href="${pageContext.request.contextPath}/">SmartShop</a>
+
+  <!-- Danh m?c -->
+  <c:if test="${not empty categories}">
+    <select class="txt" onchange="if(this.value) location.href=this.value">
+      <option value="">Danh m?c</option>
+      <c:forEach var="c" items="${categories}">
+        <option
+          value="${pageContext.request.contextPath}/products?categoryId=${c.id}"
+          <c:if test="${param.categoryId == c.id}">selected</c:if>>
+          ${c.name}
+        </option>
+      </c:forEach>
+    </select>
+  </c:if>
+
+  <!-- Search -->
+  <form class="grow" action="${pageContext.request.contextPath}/products" method="get" style="display:flex;gap:8px;">
+    <input class="txt grow" type="text" name="q" value="${param.q}" placeholder="Tìm s?n ph?m"/>
+    <c:if test="${not empty param.categoryId}">
+      <input type="hidden" name="categoryId" value="${param.categoryId}"/>
+    </c:if>
+    <button type="submit">Search</button>
+  </form>
+
+  <!-- Nav ph?i -->
+  <nav class="right">
+    <a href="${pageContext.request.contextPath}/products">Products</a>
+    <c:choose>
+      <c:when test="${empty sessionScope.uid}">
+        <a href="${pageContext.request.contextPath}/login">Login</a>
+        <a href="${pageContext.request.contextPath}/register">Register</a>
+      </c:when>
+      <c:otherwise>
+        <a href="${pageContext.request.contextPath}/cart/view">Cart</a>
+        <a href="${pageContext.request.contextPath}/account">Account</a>
+        <c:if test="${sessionScope.isAdmin}">
+          <a href="${pageContext.request.contextPath}/admin/stats">Admin</a>
+        </c:if>
+        <a href="${pageContext.request.contextPath}/logout">Logout</a>
+      </c:otherwise>
+    </c:choose>
+  </nav>
+</header>
+<hr/>

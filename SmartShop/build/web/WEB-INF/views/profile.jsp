@@ -1,22 +1,37 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib uri="jakarta.tags.core" prefix="c" %>
-<%@ include file="header.jspf" %>
-<h2>Tài khoản</h2>
-<p style="color:green">${msg}</p>
+<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ include file="/WEB-INF/views/_includes/header.jspf" %>
+<div class="container">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Tài khoản của tôi</h2>
+    <a href="${pageContext.request.contextPath}/logout" class="btn btn-outline-secondary">Logout</a>
+  </div>
 
-<h3>Cập nhật thông tin</h3>
-<form method="post" action="profile/update">
-  <input name="fullName" value="${sessionScope.auth.fullName}" placeholder="Họ tên"/>
-  <input name="email" value="${sessionScope.auth.email}" type="email" placeholder="Email"/>
-  <input name="phone" value="${sessionScope.auth.phone}" placeholder="Số điện thoại"/>
-  <button>Lưu</button>
-</form>
+  <c:if test="${not empty msg}">
+    <div class="alert alert-success">${msg}</div>
+  </c:if>
+  <c:if test="${not empty error}">
+    <div class="alert alert-danger">${error}</div>
+  </c:if>
 
-<h3>Đổi mật khẩu</h3>
-<form method="post" action="change-password">
-  <input name="oldPassword" type="password" placeholder="Mật khẩu cũ" required/>
-  <input name="newPassword" type="password" placeholder="Mật khẩu mới" minlength="6" required/>
-  <input name="confirm" type="password" placeholder="Xác nhận mật khẩu" minlength="6" required/>
-  <button>Đổi mật khẩu</button>
-</form>
-<%@ include file="footer.jspf" %>
+  <form method="post" action="${pageContext.request.contextPath}/account">
+    <div class="mb-2">
+      <label>Username</label>
+      <input type="text" class="form-control" value="${user.username}" />
+    </div>
+    <div class="mb-2">
+      <label>Họ tên</label>
+      <input type="text" name="full_name" class="form-control" value="${user.fullName}" />
+    </div>
+    <div class="mb-2">
+      <label>Email</label>
+      <input type="email" name="email" class="form-control" value="${user.email}" />
+    </div>
+    <div class="mb-3">
+      <label>Phone</label>
+      <input type="text" name="phone" class="form-control" value="${user.phone}" />
+    </div>
+    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+    <a href="${pageContext.request.contextPath}/account/password" class="btn btn-link">Đổi mật khẩu</a>
+  </form>
+  <a href="${pageContext.request.contextPath}/logout">Logout</a>
+</div>

@@ -1,0 +1,1276 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Jakarta EE XML Schemas | Jakarta EE | The Eclipse Foundation</title>
+<meta property="og:title" content="Jakarta EE XML Schemas | Jakarta EE | The Eclipse Foundation" />
+<meta name="twitter:title" content="Jakarta EE XML Schemas | Jakarta EE | The Eclipse Foundation" />
+
+<meta name="description" content="Jakarta® Enterprise Edition (EE) is the future of cloud native Java. Jakarta® EE open source software drives cloud native innovation, modernizes enterprise …">
+<meta property="og:description" content="Jakarta® Enterprise Edition (EE) is the future of cloud native Java. Jakarta® EE open source software drives cloud native innovation, modernizes enterprise …">
+<meta name="twitter:description" content="Jakarta® Enterprise Edition (EE) is the future of cloud native Java. Jakarta® EE open source software drives cloud native innovation, modernizes enterprise …">
+<link href='/images/jakarta/favicon.ico' rel='icon' type='image/x-icon'/>
+
+<meta property="og:image" content="https://jakarta.ee/images/jakarta/jakarta_ee_400x400.png" />
+<meta name="twitter:image" content="https://jakarta.ee/images/jakarta/jakarta_ee_400x400.png" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@EclipseFdn" />
+<meta name="twitter:creator" content="@EclipseFdn" />
+<meta property="og:url" content="https://jakarta.ee/xml/ns/jakartaee/" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Jakarta® EE: The New Home of Cloud Native Java" />
+<meta name="keywords" content="Jakarta EE software, Java EE, cloud, microservices, enterprise, open source, innovation">
+
+
+<meta name="generator" content="Hugo 0.110.0">
+
+<link rel="canonical" href="https://jakarta.ee/xml/ns/jakartaee/" />
+
+<link rel="alternate" href="/xml/ns/jakartaee/index.xml" type="application/rss+xml" title="">
+
+
+<link rel="stylesheet" href="/css/styles.css?v2.3?v=1755585408">
+  
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-5WLCZXC');</script>
+  
+<script>
+	
+		var tableClasses = "table";
+	
+</script>
+
+
+
+
+  
+<meta name="google-site-verification" content="5YeiMF6KiZn6B27dbjuYWoFgMnzsEdbqqSaE4SbO3l4" />
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet" type="text/css"/>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Exo:wght@400;700&display=swap" rel="stylesheet">
+
+
+
+
+  
+
+</head>
+<body>
+  
+
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5WLCZXC"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<a class="sr-only" href="#content">Skip to main content</a>
+
+
+<div class="clearfix toolbar-container-wrapper">
+  <div class="container">
+    <div class="text-right toolbar-row row hidden-print">
+      <div class="col-md-24 row-toolbar-col">
+        <ul class="list-inline">
+          <li><a href="https://accounts.eclipse.org/user/edit" class="" data-tab-destination="tab-profile">Edit my account</a></li>
+          <li><a class="toolbar-link toolbar-manage-cookies dropdown-toggle">Manage Cookies</a></li>
+          
+          
+
+
+<li class="dropdown eclipse-more hidden-xs">
+  <a data-toggle="dropdown" class="dropdown-toggle" role="button"><i class="fa fa-search"></i> <b class="caret"></b></a>
+  <ul class="dropdown-menu">
+    <li>
+      
+      <div class="yamm-content">
+        <div class="row">
+          <div class="col-sm-24">
+            <p>
+              <strong>Search</strong>
+            </p>
+            <form action="https://www.eclipse.org/home/search" method="get">
+              <div class="form-group">
+                <input class="form-control margin-bottom-10" type="textfield" name="q" placeholder="Search">
+                <input class="btn btn-primary" type="submit" value="Submit">
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</li>
+
+
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="navbar-wrapper">
+  <div class="container">
+    <div class="row" id="header-row">
+      <div class="col-sm-5" id="header-left">
+        <div class="wrapper-logo-default">
+
+            
+
+            
+            
+            
+
+            
+
+            <a title="Jakarta® EE: The New Home of Cloud Native Java" href="https://jakarta.ee/">
+              <img width="200" class="logo-eclipse-default img-responsive hidden-xs" src="https://jakarta.ee/images/jakarta/jakarta-ee-logo-color.svg" alt="Jakarta® EE: The New Home of Cloud Native Java" />
+            </a>
+            
+
+        </div>
+      </div>
+      
+      
+        
+      
+      <div class="col-sm-19 margin-top-20" id="main-menu-wrapper">
+        
+        
+        
+
+        
+        
+        
+        
+          <div class="float-right hidden-xs display-flex gap-10" id="btn-call-for-action">
+            <div class="btn-starter">
+              <a class="btn btn-secondary margin-0" href="https://start.jakarta.ee/">Starter</a>
+            </div>
+            <div id="btn-call-for-action"><a href="/compatibility/download/" class="btn btn-warning margin-0"><i class="fa "></i> Download</a></div>
+          </div>
+        
+        <div class="navbar float-sm-right yamm" id="main-menu">
+          <div class="navbar-collapse collapse reset float-right" id="navbar-main-menu">
+            <ul class="nav navbar-nav">
+              
+
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    <li class="dropdown">
+      <a href="#" data-toggle="dropdown" class="dropdown-toggle">
+        
+        
+        <span>Learn</span>
+        <b class="caret"></b>
+      </a>
+      <ul class="dropdown-menu">
+        
+          
+          <li><a href="/learn/">Overview</a> </li>
+          
+          <li><a href="/learn/docs/jakartaee-tutorial/current/index.html">Jakarta EE Tutorial</a> </li>
+          
+          <li><a href="/learn/starter-guides/">Starter Guides</a> </li>
+          
+          <li><a href="/learn/specification-guides/">Specification Guides</a> </li>
+          
+          <li><a href="/learn/#videos">Video Guides</a> </li>
+          
+          <li><a href="https://www.linkedin.com/learning/jakarta-ee-overview">Jakarta EE Overview Course</a> </li>
+          
+        
+      </ul>
+    </li>
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    <li class="dropdown">
+      <a href="#" data-toggle="dropdown" class="dropdown-toggle">
+        
+        
+        <span>Specifications</span>
+        <b class="caret"></b>
+      </a>
+      <ul class="dropdown-menu">
+        
+          
+          <li><a href="/specifications/">Browse Specifications</a> </li>
+          
+          <li><a href="/about/jesp/">Specification Process</a> </li>
+          
+          <li><a href="/committees/specification/guide/">JESP guide</a> </li>
+          
+          <li><a href="/projects/">Specification Projects</a> </li>
+          
+          <li><a href="/release/">Releases</a> </li>
+          
+        
+      </ul>
+    </li>
+  
+
+  
+    
+    
+      
+    
+      
+    
+    <li class="dropdown">
+      <a href="#" data-toggle="dropdown" class="dropdown-toggle">
+        
+        
+        <span>Compatible Products</span>
+        <b class="caret"></b>
+      </a>
+      <ul class="dropdown-menu">
+        
+          
+          <li><a href="/compatibility/">Jakarta EE Compatible Products</a> </li>
+          
+          <li><a href="/compatibility/get-listed/">Get Listed</a> </li>
+          
+        
+      </ul>
+    </li>
+  
+
+  
+    
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+    
+    <li class="dropdown eclipse-more">
+      <a href="#" data-toggle="dropdown" class="dropdown-toggle">
+        
+        
+        <span>About</span>
+        <b class="caret"></b>
+      </a>
+      <ul class="dropdown-menu">
+        
+        <li>
+          
+          <div class="yamm-content">
+            <div class="row">
+              <div class="col-sm-12 padding-right-0">
+                <div class="dropdown-menu-left-panel">
+                  <ul class="list-unstyled menu-tabs match-height-dropdown-menu-item" role="tablist">
+                    
+                      
+                        <li role="presentation" class="active">
+                          <i class="hidden-xs fa fa-caret-right" aria-hidden="true"></i> 
+                          <a class="hidden-xs" data-target="#jakarta-ee-tab" aria-controls="jakarta-ee-tab" role="tab" data-toggle="tab">
+                            Jakarta EE
+                          </a>
+
+                          <a class="visible-xs" role="button" data-toggle="collapse" href="#jakarta-ee-collapse" aria-expanded="false" aria-controls="jakarta-ee-collapse">
+                            Jakarta EE
+                            <b class="caret"></b>
+                          </a>
+                          <div class="dropdown-collapse collapse" id="jakarta-ee-collapse">
+                            <ul class="list-unstyled">
+                              
+                                <li><a href="/about/jakarta-ee">About Jakarta EE</a></li>
+                              
+                                <li><a href="/about/why-jakarta-ee">Why Jakarta EE</a></li>
+                              
+                                <li><a href="/about/faq/">Frequently Asked Questions</a></li>
+                              
+                            </ul>
+                          </div>
+
+                        </li>
+                      
+                    
+                      
+                        <li role="presentation" >
+                          <i class="hidden-xs fa fa-caret-right" aria-hidden="true"></i> 
+                          <a class="hidden-xs" data-target="#jakarta-ee-working-group-tab" aria-controls="jakarta-ee-working-group-tab" role="tab" data-toggle="tab">
+                            Jakarta EE Working Group
+                          </a>
+
+                          <a class="visible-xs" role="button" data-toggle="collapse" href="#jakarta-ee-working-group-collapse" aria-expanded="false" aria-controls="jakarta-ee-working-group-collapse">
+                            Jakarta EE Working Group
+                            <b class="caret"></b>
+                          </a>
+                          <div class="dropdown-collapse collapse" id="jakarta-ee-working-group-collapse">
+                            <ul class="list-unstyled">
+                              
+                                <li><a href="/about/working-group">About Working Group</a></li>
+                              
+                                <li><a href="https://eclipse.org/org/workinggroups/jakarta_ee_charter.php">Charter</a></li>
+                              
+                                <li><a href="/legal/trademark_guidelines/">Trademark Guidelines</a></li>
+                              
+                                <li><a href="https://www.eclipse.org/ee4j/direction.php">Technical Direction</a></li>
+                              
+                                <li><a href="/committees">Committees</a></li>
+                              
+                                <li><a href="/meeting_minutes/">Committees Meeting Minutes</a></li>
+                              
+                            </ul>
+                          </div>
+
+                        </li>
+                      
+                    
+                      
+                        <li><a href="/news/">News</a></li>
+                      
+                    
+                  </ul>
+                </div>
+              </div>
+              <div class="col-sm-12 padding-left-0 hidden-xs">
+                <div class="dropdown-menu-right-panel">
+                  <div class="tab-content">
+                    
+                      
+                        <div role="tabpanel" class="match-height-dropdown-menu-item tab-pane active" id="jakarta-ee-tab">
+                          <ul class="list-unstyled">
+                          
+                            <li><a href="/about/jakarta-ee"><strong>About Jakarta EE</strong></a></li>
+                          
+                            <li><a href="/about/why-jakarta-ee"><strong>Why Jakarta EE</strong></a></li>
+                          
+                            <li><a href="/about/faq/"><strong>Frequently Asked Questions</strong></a></li>
+                          
+                        </ul>
+                        </div>
+                      
+                    
+                      
+                        <div role="tabpanel" class="match-height-dropdown-menu-item tab-pane fade" id="jakarta-ee-working-group-tab">
+                          <ul class="list-unstyled">
+                          
+                            <li><a href="/about/working-group"><strong>About Working Group</strong></a></li>
+                          
+                            <li><a href="https://eclipse.org/org/workinggroups/jakarta_ee_charter.php"><strong>Charter</strong></a></li>
+                          
+                            <li><a href="/legal/trademark_guidelines/"><strong>Trademark Guidelines</strong></a></li>
+                          
+                            <li><a href="https://www.eclipse.org/ee4j/direction.php"><strong>Technical Direction</strong></a></li>
+                          
+                            <li><a href="/committees"><strong>Committees</strong></a></li>
+                          
+                            <li><a href="/meeting_minutes/"><strong>Committees Meeting Minutes</strong></a></li>
+                          
+                        </ul>
+                        </div>
+                      
+                    
+                      
+                    
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+        </li>
+        
+      </ul>
+    </li>
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    <li class="dropdown">
+      <a href="#" data-toggle="dropdown" class="dropdown-toggle">
+        
+        
+        <span>Community</span>
+        <b class="caret"></b>
+      </a>
+      <ul class="dropdown-menu">
+        
+          
+          <li><a href="/community/">Overview</a> </li>
+          
+          <li><a href="/resources/">Resources</a> </li>
+          
+          <li><a href="/blogs/">Blog</a> </li>
+          
+          <li><a href="/community/get-involved/">Get Involved</a> </li>
+          
+          <li><a href="/community/events/">Events</a> </li>
+          
+          <li><a href="/connect/">Stay Connected</a> </li>
+          
+          <li><a href="/community/videos">Videos</a> </li>
+          
+          <li><a href="https://jakartaone.org">JakartaOne Livestream</a> </li>
+          
+          <li><a href="/community/developer-advocate">Developer Advocate</a> </li>
+          
+          <li><a href="/community/#meetups">Tech Talk Meet-ups</a> </li>
+          
+        
+      </ul>
+    </li>
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    <li class="dropdown">
+      <a href="#" data-toggle="dropdown" class="dropdown-toggle">
+        
+        
+        <span>Join</span>
+        <b class="caret"></b>
+      </a>
+      <ul class="dropdown-menu">
+        
+          
+          <li><a href="/membership">Become a Member</a> </li>
+          
+          <li><a href="/membership/members/">Members</a> </li>
+          
+          <li><a href="/supporters/sponsor/">Become a Sponsor</a> </li>
+          
+        
+      </ul>
+    </li>
+  
+
+
+<li class="visible-xs"><a href="/release/">Releases</a></li>
+            </ul>
+          </div>
+          
+<div class="navbar-header">
+  
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-main-menu">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+  
+  <div class="wrapper-logo-mobile">
+      
+      
+      
+
+        
+
+      <a class="navbar-brand visible-xs" title="Jakarta® EE: The New Home of Cloud Native Java" href="https://jakarta.ee/">
+        <img width="200" class="logo-eclipse-default-mobile img-responsive" src="/images/jakarta/jakarta-ee-logo-color.svg" alt="Jakarta® EE: The New Home of Cloud Native Java" />
+      </a>
+    
+  </div>
+</div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<header class="header-wrapper header-secondary-bg-img  header-default-bg-img" id="header-wrapper">
+  
+
+
+</header>
+
+  
+
+
+
+
+  
+
+
+
+
+<div class="default-breadcrumbs hidden-print" id="breadcrumb">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-24">
+        <ol aria-label="Breadcrumb" class="breadcrumb">
+          
+            
+              
+            
+              
+            
+              
+            
+            <li >
+              <a href="https://jakarta.ee/">Home</a>
+            </li>
+          
+            
+            <li >
+              <a href="https://jakarta.ee/xml/">Xml</a>
+            </li>
+          
+            
+            <li >
+              <a href="https://jakarta.ee/xml/ns/">Ns</a>
+            </li>
+          
+            
+            <li  class="active" aria-current="page">
+              <a href="https://jakarta.ee/xml/ns/jakartaee/">Jakarta EE XML Schemas</a>
+            </li>
+          
+          </ol>
+          
+        </div>
+    </div>
+  </div>
+</div>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+ 
+<main>
+  <div class="container">
+    
+      <div class="row">
+        <div class="col-md-18 padding-bottom-30">
+    
+
+    
+
+    
+      <h1>
+        
+          Jakarta EE XML Schemas
+        
+      </h1>
+    
+
+
+
+  
+  <h2 id="content">Content</h2>
+
+<ul>
+  <li><a href="#intro">Introduction</a></li>
+  <li><a href="#using">Using Jakarta EE Schemas</a></li>
+   <li><a href="#11">Jakarta EE 11</a></li>
+   <li><a href="#10">Jakarta EE 10</a></li>
+   <li><a href="#9">Jakarta EE 9</a></li>
+   <li><a href="#8">Jakarta EE 8</a></li>
+</ul>
+
+<h2 id="intro">Introduction</h2>
+<p>This document lists the document formats that will be used by Jakarta EE</p>
+<p>The Jakarta EE platform specification also requires support for Jakarta Persistence and Jakarta Validation. The Jakarta Persistence Schemas are available at <a href="http://jakarta.ee/xml/ns/persistence/">http://jakarta.ee/xml/ns/persistence/</a>. The Jakarta Validation Schemas are available at <a href="https://jakarta.ee/xml/ns/validation/">https://jakarta.ee/xml/ns/validation/</a>.</p>
+<p>This document describes how to use the Jakarta EE schemas and provides a list of XML Schemas for each deployment descriptor.</p>
+<p>List of <a href="../../../schemas/">namespaces</a>.</p>
+<h2 id="using">Using Jakarta EE Schemas</h2>
+<p>All Jakarta EE 9 and newer Deployment Descriptor Schemas share the namespace <a href="http://jakarta.ee/xml/ns/jakartaee">http://jakarta.ee/xml/ns/jakartaee</a>. Each schema document contains a version attribute that contains the version of the specification. For example, the XML Schema document for the Jakarta Servlet specification contains the version attribute value &ldquo;5.0&rdquo;, pertaining to the specific version of the specification as well as the schema document itself.</p>
+<p>Each Jakarta EE XML Schema document&rsquo;s file name contains the specific version of the related specification. This is introduced for convenience to locate specific versions of the schema documents. However, Deployment Descriptor instances are not required to refer to a specific file. Instead, an instance must specify the version of the corresponding specification by using the version attribute. For example, Jakarta servlet Deployment Descriptor instances that must be processed with the servlet 5.0 version must indicate the version within the version attribute of the instance document, for example, &ldquo;5.0&rdquo;. The Deployment Descriptor processors use the version information to choose the appropriate version of the schema document(s) to process the Deployment Descriptor instances.</p>
+<p>A specific version of the Jakarta EE specification contains a set of deployment descriptor schemas to constitute the Jakarta EE Schema. The common definitions are contained in the jakartaee_<!-- raw HTML omitted -->.xsd document that may be included by several Jakarta EE Deployment Descriptor schemas.</p>
+
+  
+<a name ="11">
+<h2>Jakarta EE 11</h2>
+</a>
+  <table>
+    <th>File Name</th>
+    <th>Description</th>
+    <th>Status</th>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/jakartaee_11.xsd" target="_blank"> jakartaee_11.xsd</a></td>
+        <td>Common shareable schemas of Jakarta EE deployment descriptors</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/application_11.xsd" target="_blank"> application_11.xsd</a></td>
+        <td>XML Schema for the Application deployment descriptor</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/application-client_11.xsd" target="_blank"> application-client_11.xsd</a></td>
+        <td>XML Schema for the Application client deployment descriptor</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/batchXML_2_0.xsd" target="_blank"> batchXML_2_0.xsd</a></td>
+        <td>XML Schema for the Jakarta Batch artifacts XML file (batch.xml)</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/beans_4_1.xsd" target="_blank"> beans_4_1.xsd</a></td>
+        <td>XML Schema for the Jakarta Contexts and Dependency Injection XML file (beans.xml)</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/jobXML_2_0.xsd" target="_blank"> jobXML_2_0.xsd</a></td>
+        <td>XML Schema for the Jakarta Batch Job Specification Language (JSL)</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/connector_2_1.xsd" target="_blank"> connector_2_1.xsd</a></td>
+        <td>XML Schema for the Jakarta Connectors deployment descriptor</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/ejb-jar_4_0.xsd" target="_blank"> ejb-jar_4_0.xsd</a></td>
+        <td>XML Schema for the Enterprise Beans deployment descriptor</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/jsp_4_0.xsd" target="_blank"> jsp_4_0.xsd</a></td>
+        <td>XML Schema for the Jakarta Server Pages deployment descriptor</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/web-app_6_1.xsd" target="_blank"> web-app_6_1.xsd</a></td>
+        <td>XML Schema for the Jakarta Servlet deployment descriptor (web.xml)</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/web-fragment_6_1.xsd" target="_blank"> web-fragment_6_1.xsd</a></td>
+        <td>XML Schema for the Jakarta Servlet deployment descriptor (web-fragment.xml)</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/web-common_6_1.xsd" target="_blank"> web-common_6_1.xsd</a></td>
+        <td>XML Schema common for the various Servlet deployment descriptors</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/web-facesconfig_4_1.xsd" target="_blank"> web-facesconfig_4_1.xsd</a></td>
+        <td>XML Schema for the Jakarta Server Faces Application Configuration File</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/web-facelettaglibrary_4_1.xsd" target="_blank"> web-facelettaglibrary_4_1.xsd</a></td>
+        <td>XML Schema for the Jakarta Tag Libraries in the Jakarta Faces Standard Facelets View Declaration Language (Facelets VDL)</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/web-partialresponse_4_1.xsd" target="_blank"> web-partialresponse_4_1.xsd</a></td>
+        <td>XML Schema for the Jakarta Faces Partial Response used in JSF Ajax frameworks</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/web-jsptaglibrary_4_0.xsd" target="_blank"> web-jsptaglibrary_4_0.xsd</a></td>
+        <td>XML Schema for the Jakarta Server Pages Taglibrary descriptor</td>
+        <td>Final</td>
+      </tr>
+  </table>
+
+  <h3>Dependent Namespaces</h3>
+  <ul>
+    <li><a href="https://jakarta.ee/xml/ns/persistence#3.2">https://jakarta.ee/xml/ns/persistence#3.2</a></li>
+    <li><a href="https://jakarta.ee/xml/ns/validation#3.1">https://jakarta.ee/xml/ns/validation#3.1</a></li>
+  </ul>
+  
+<a name ="10">
+<h2>Jakarta EE 10</h2>
+</a>
+  <table>
+    <th>File Name</th>
+    <th>Description</th>
+    <th>Status</th>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/jakartaee_10.xsd" target="_blank"> jakartaee_10.xsd</a></td>
+        <td>Common shareable schemas of Jakarta EE deployment descriptors</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/jakartaee_web_services_metadata_handler_3_0.xsd" target="_blank"> jakartaee_web_services_metadata_handler_3_0.xsd</a></td>
+        <td>XML Schema for the Handler chain configuration descriptor</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/batchXML_2_0.xsd" target="_blank"> batchXML_2_0.xsd</a></td>
+        <td>XML Schema for the Jakarta Batch artifacts XML file (batch.xml)</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/beans_4_0.xsd" target="_blank"> beans_4_0.xsd</a></td>
+        <td>XML Schema for the Jakarta Contexts and Dependency Injection XML file (beans.xml)</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/jobXML_2_0.xsd" target="_blank"> jobXML_2_0.xsd</a></td>
+        <td>XML Schema for the Jakarta Batch Job Specification Language (JSL)</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/jsp_3_1.xsd" target="_blank"> jsp_3_1.xsd</a></td>
+        <td>XML Schema for the Jakarta Server Pages deployment descriptor</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/application_10.xsd" target="_blank"> application_10.xsd</a></td>
+        <td>XML Schema for the Application deployment descriptor</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/application-client_10.xsd" target="_blank"> application-client_10.xsd</a></td>
+        <td>XML Schema for the Application client deployment descriptor</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/connector_2_1.xsd" target="_blank"> connector_2_1.xsd</a></td>
+        <td>XML Schema for the Jakarta Connectors deployment descriptor</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/ejb-jar_4_0.xsd" target="_blank"> ejb-jar_4_0.xsd</a></td>
+        <td>XML Schema for the Enterprise Beans deployment descriptor</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/jakartaee_web_services_2_0.xsd" target="_blank"> jakartaee_web_services_2_0.xsd</a></td>
+        <td>XML Schema for the Web Services deployment descriptor</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/jakartaee_web_services_client_2_0.xsd" target="_blank"> jakartaee_web_services_client_2_0.xsd</a></td>
+        <td>XML Schema for the Web Services Client deployment descriptor</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/permissions_10.xsd" target="_blank"> permissions_10.xsd</a></td>
+        <td>XML Schema for the application or module declared permissions</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/web-app_6_0.xsd" target="_blank"> web-app_6_0.xsd</a></td>
+        <td>XML Schema for the Jakarta Servlet deployment descriptor (web.xml)</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/web-fragment_6_0.xsd" target="_blank"> web-fragment_6_0.xsd</a></td>
+        <td>XML Schema for the Jakarta Servlet deployment descriptor (web-fragment.xml)</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/web-common_6_0.xsd" target="_blank"> web-common_6_0.xsd</a></td>
+        <td>XML Schema common for the various Servlet deployment descriptors</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/web-facesconfig_4_0.xsd" target="_blank"> web-facesconfig_4_0.xsd</a></td>
+        <td>XML Schema for the Jakarta Server Faces Application Configuration File</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/web-facelettaglibrary_4_0.xsd" target="_blank"> web-facelettaglibrary_4_0.xsd</a></td>
+        <td>XML Schema for the Jakarta Tag Libraries in the Jakarta Faces Standard Facelets View Declaration Language (Facelets VDL)</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/web-partialresponse_4_0.xsd" target="_blank"> web-partialresponse_4_0.xsd</a></td>
+        <td>XML Schema for the Jakarta Faces Partial Response used in JSF Ajax frameworks</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/web-jsptaglibrary_3_1.xsd" target="_blank"> web-jsptaglibrary_3_1.xsd</a></td>
+        <td>XML Schema for the Jakarta Server Pages Taglibrary descriptor</td>
+        <td>Final</td>
+      </tr>
+  </table>
+
+  <h3>Dependent Namespaces</h3>
+  <ul>
+    <li><a href="https://jakarta.ee/xml/ns/jaxb#4">https://jakarta.ee/xml/ns/jaxb#4</a></li>
+    <li><a href="https://jakarta.ee/xml/ns/jaxws#4">https://jakarta.ee/xml/ns/jaxws#4</a></li>
+    <li><a href="https://jakarta.ee/xml/ns/persistence#3.1">https://jakarta.ee/xml/ns/persistence#3.1</a></li>
+    <li><a href="https://jakarta.ee/xml/ns/validation#3">https://jakarta.ee/xml/ns/validation#3</a></li>
+  </ul>
+  
+<a name ="9">
+<h2>Jakarta EE 9</h2>
+</a>
+  <table>
+    <th>File Name</th>
+    <th>Description</th>
+    <th>Status</th>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/jakartaee_9.xsd" target="_blank"> jakartaee_9.xsd</a></td>
+        <td>Common shareable schemas of Jakarta EE deployment descriptors</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/jakartaee_web_services_metadata_handler_3_0.xsd" target="_blank"> jakartaee_web_services_metadata_handler_3_0.xsd</a></td>
+        <td>XML Schema for the Handler chain configuration descriptor</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/batchXML_2_0.xsd" target="_blank"> batchXML_2_0.xsd</a></td>
+        <td>XML Schema for the Jakarta Batch artifacts XML file (batch.xml)</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/beans_3_0.xsd" target="_blank"> beans_3_0.xsd</a></td>
+        <td>XML Schema for the Jakarta Contexts and Dependency Injection XML file (beans.xml)</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/jobXML_2_0.xsd" target="_blank"> jobXML_2_0.xsd</a></td>
+        <td>XML Schema for the Jakarta Batch Job Specification Language (JSL)</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/jsp_3_0.xsd" target="_blank"> jsp_3_0.xsd</a></td>
+        <td>XML Schema for the Jakarta Server Pages deployment descriptor</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/application_9.xsd" target="_blank"> application_9.xsd</a></td>
+        <td>XML Schema for the Application deployment descriptor</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/application-client_9.xsd" target="_blank"> application-client_9.xsd</a></td>
+        <td>XML Schema for the Application client deployment descriptor</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/connector_2_0.xsd" target="_blank"> connector_2_0.xsd</a></td>
+        <td>XML Schema for the Jakarta Connectors deployment descriptor</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/ejb-jar_4_0.xsd" target="_blank"> ejb-jar_4_0.xsd</a></td>
+        <td>XML Schema for the Jakarta Enterprise Beans deployment descriptor</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/jakartaee_web_services_2_0.xsd" target="_blank"> jakartaee_web_services_2_0.xsd</a></td>
+        <td>XML Schema for the Web Services deployment descriptor</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/jakartaee_web_services_client_2_0.xsd" target="_blank"> jakartaee_web_services_client_2_0.xsd</a></td>
+        <td>XML Schema for the Web Services Client deployment descriptor</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/permissions_9.xsd" target="_blank"> permissions_9.xsd</a></td>
+        <td>XML Schema for the application or module declared permissions</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/web-app_5_0.xsd" target="_blank"> web-app_5_0.xsd</a></td>
+        <td>XML Schema for the Jakarta Servlet deployment descriptor (web.xml)</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/web-fragment_5_0.xsd" target="_blank"> web-fragment_5_0.xsd</a></td>
+        <td>XML Schema for the Jakarta Servlet deployment descriptor (web-fragment.xml)</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/web-common_5_0.xsd" target="_blank"> web-common_5_0.xsd</a></td>
+        <td>XML Schema common for the various Jakarta Servlet deployment descriptors</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/web-facesconfig_3_0.xsd" target="_blank"> web-facesconfig_3_0.xsd</a></td>
+        <td>XML Schema for the Jakarta Faces Application Configuration File</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/web-facelettaglibrary_3_0.xsd" target="_blank"> web-facelettaglibrary_3_0.xsd</a></td>
+        <td>XML Schema for the Jakarta Tag Libraries in the Jakarta Faces Standard Facelets View Declaration Language (Facelets VDL)</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/web-partialresponse_3_0.xsd" target="_blank"> web-partialresponse_3_0.xsd</a></td>
+        <td>XML Schema for the Jakarta Faces Partial Response used in JSF Ajax frameworks</td>
+        <td>Final</td>
+      </tr>
+      <tr>
+        <td><a href="/xml/ns/jakartaee/web-jsptaglibrary_3_0.xsd" target="_blank"> web-jsptaglibrary_3_0.xsd</a></td>
+        <td>XML Schema for the Jakarta Server Pages Taglibrary descriptor</td>
+        <td>Final</td>
+      </tr>
+  </table>
+
+  <h3>Dependent Namespaces</h3>
+  <ul>
+    <li><a href="https://jakarta.ee/xml/ns/jaxb#3">https://jakarta.ee/xml/ns/jaxb#3</a></li>
+    <li><a href="https://jakarta.ee/xml/ns/jaxws#3">https://jakarta.ee/xml/ns/jaxws#3</a></li>
+    <li><a href="https://jakarta.ee/xml/ns/persistence#3">https://jakarta.ee/xml/ns/persistence#3</a></li>
+    <li><a href="https://jakarta.ee/xml/ns/validation#3">https://jakarta.ee/xml/ns/validation#3</a></li>
+  </ul>  
+<h2 id="8">Jakarta EE 8</h2>
+<p>See <a href="http://xmlns.jcp.org/xml/ns/javaee#8">http://xmlns.jcp.org/xml/ns/javaee#8</a> for all Jakarta EE 8 Schemas.</p>
+
+
+  
+
+    
+
+
+     
+      
+      </div>
+        <div class="col-md-6  padding-bottom-30">
+          
+            
+
+  <aside id="main-sidebar">
+    <ul id="leftnav" class="ul-left-nav fa-ul hidden-print">
+        <li class="separator">
+            <a href="/">Innovate with Us</a>
+        </li>
+        <li>
+            <a href="/about/" target="_self">About Jakarta EE</a>
+        </li>
+        <li>
+            <a href="/about/faq/" target="_self">Frequently Asked Questions</a>
+        </li>
+        <li>
+            <a href="/membership/" target="_self">Become a Member</a>
+        </li>
+        <li>
+            <a href="/connect/" target="_self">Stay Connected</a>
+        </li>
+        <li>
+            <a href="https://eclipse.org/org/workinggroups/jakarta_ee_charter.php" target="_self">Working Group Charter</a>
+        </li>
+        <li>
+            <a href="https://www.eclipse.org/ee4j/direction.php" target="_self">Technical Direction</a>
+        </li>
+        <li>
+            <a href="/newsletter" target="_self">Newsletter Archives</a>
+        </li>
+        <li>
+            <a href="/meeting_minutes" target="_self">Meeting Minutes</a>
+        </li>
+
+        <li>
+            <a href="/legal/trademark_guidelines/" target="_self">Trademark Guidelines</a>
+        </li>
+        <li>
+            <a href="/about/jesp/" target="_self">Specification Process</a>
+        </li>
+    </ul>
+</aside>
+
+
+
+
+          
+        </div>
+      </div>
+    
+  </div>
+</main>
+  
+
+  <div class="eclipsefdn-featured-footer featured-footer" id="featured-footer" data-publish-target="jakarta_ee">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-24 featured-container">
+        </div>
+      </div>
+    </div>
+  </div>
+
+<div class="featured-footer featured-mailing-list text-center" id="social-media">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-24">
+        <ul class="list-inline">
+          <li><a class="btn btn-primary margin-right-15" href="https://accounts.eclipse.org/mailing-list/jakarta.ee-wg">Sign up now</a></li>
+            <li>
+            <a class="social-icon" href="https://bsky.app/profile/jakarta.ee">
+              <i class="fa-brands fa-bluesky fa-xl" aria-label="Bluesky account"></i><span class="sr-only">Bluesky account</span>
+            </a>
+            </li>
+            <li>
+            <a class="social-icon" href="https://www.facebook.com/JakartaEE/">
+              <i class="fa-brands fa-facebook fa-xl" aria-label="Facebook account"></i><span class="sr-only">Facebook account</span>
+            </a>
+            </li>
+            <li>
+            <a class="social-icon" href="https://ca.linkedin.com/showcase/jakartaee">
+              <i class="fa-brands fa-linkedin fa-xl" aria-label="LinkedIn account"></i><span class="sr-only">LinkedIn account</span>
+            </a>
+            </li>
+            <li>
+            <a class="social-icon" href="https://mastodon.social/@jakartaee">
+              <i class="fa-brands fa-mastodon fa-xl" aria-label="Mastodon account"></i><span class="sr-only">Mastodon account</span>
+            </a>
+            </li>
+            <li>
+            <a class="social-icon" href="https://twitter.com/JakartaEE">
+              <i class="fa-brands fa-x-twitter fa-xl" aria-label="Twitter account"></i><span class="sr-only">Twitter account</span>
+            </a>
+            </li>
+            <li>
+            <a class="social-icon" href="https://www.youtube.com/c/JakartaEE">
+              <i class="fa-brands fa-youtube fa-xl" aria-label="YouTube account"></i><span class="sr-only">YouTube account</span>
+            </a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  
+  
+<p id="back-to-top">
+  <a class="visible-xs" href="#top">Back to the top</a>
+</p>
+<footer id="solstice-footer" class="">
+  <div class="container">
+    <div class="row">
+      
+      <section class="col-sm-5th footer-section-socials" id="footer-socials">
+    <h2 class="section-title"><img class="img-responsive" src=https://jakarta.ee/images/jakarta/jakarta-ee-logo-white.svg alt="Jakarta EE logo"></h2>
+    <ul class="list-inline margin-top-20">
+        <li>
+          <a class="social-icon" href="https://bsky.app/profile/jakarta.ee">
+            <i class="fa-brands fa-bluesky" aria-label="Bluesky account"></i>
+          </a>
+        </li>
+        <li>
+          <a class="social-icon" href="https://www.facebook.com/JakartaEE/">
+            <i class="fa-brands fa-facebook" aria-label="Facebook account"></i>
+          </a>
+        </li>
+        <li>
+          <a class="social-icon" href="https://ca.linkedin.com/showcase/jakartaee">
+            <i class="fa-brands fa-linkedin" aria-label="LinkedIn account"></i>
+          </a>
+        </li>
+        <li>
+          <a class="social-icon" href="https://mastodon.social/@jakartaee">
+            <i class="fa-brands fa-mastodon" aria-label="Mastodon account"></i>
+          </a>
+        </li>
+        <li>
+          <a class="social-icon" href="https://twitter.com/JakartaEE">
+            <i class="fa-brands fa-x-twitter" aria-label="Twitter account"></i>
+          </a>
+        </li>
+        <li>
+          <a class="social-icon" href="https://www.youtube.com/c/JakartaEE">
+            <i class="fa-brands fa-youtube" aria-label="YouTube account"></i>
+          </a>
+        </li>
+      </ul>
+  </section>
+
+
+
+
+  
+  <section class="col-sm-5th padding-top-20" id="footer-eclipse-foundation">
+    <h2 class="section-title">Eclipse Foundation</h2>
+    <ul class="nav">
+      <li><a href="https://www.eclipse.org/org/">About</a></li>
+      <li><a href="https://www.eclipse.org/org/foundation/contact.php">Contact Us</a></li>
+      <li><a href="https://www.eclipse.org/sponsor">Sponsor</a></li>
+      <li><a href="https://www.eclipse.org/membership">Membership</a></li>
+      <li><a href="https://www.eclipse.org/org/documents/">Governance</a></li>
+      <li><a href="https://www.eclipse.org/org/documents/Community_Code_of_Conduct.php"></a></li>
+      <li><a href="https://www.eclipse.org/artwork/">Logo and Artwork</a></li>
+      <li><a href="https://www.eclipse.org/org/foundation/directors.php">Board of Directors</a></li>
+      <li><a href="https://www.eclipse.org/careers/">Careers</a></li>
+    </ul>
+  </section>
+
+
+
+
+
+  
+  <section class="col-sm-5th padding-top-20" id="footer-legal">
+    <h2 class="section-title">Legal</h2>
+    <ul class="nav">
+      <li><a href="https://www.eclipse.org/legal/privacy/">Privacy Policy</a></li>
+      <li><a href="https://www.eclipse.org/legal/terms-of-use/">Terms of Use</a></li>
+      <li><a href="https://www.eclipse.org/legal/compliance/">Compliance</a></li>
+      <li><a href="https://www.eclipse.org/legal/epl-2.0/">Eclipse Public License</a></li>
+      <li><a href="https://www.eclipse.org/legal/">Legal Resources </a></li>
+    </ul>
+  </section>
+
+
+<section class="col-sm-5th padding-top-20" id="footer-useful-links">
+  <h2 class="section-title">Useful Links</h2>
+  <ul class="nav">
+    <li><a href="https://github.com/jakartaee/jakarta.ee">Report a Bug</a></li>
+    <li><a href="/resources/">Documentation</a></li>
+    <li><a href="/community/get-involved/">How to Contribute</a></li>
+    <li><a href="/connect/mailing-lists/">Mailing Lists</a></li>
+    <li><a href="/connect/">Stay Connected</a></li>
+    <li><a href="/compatibility/">Compatible Products</a></li>
+  </ul>
+</section>
+
+
+
+
+  
+  <section class="col-sm-5th padding-top-20" id="footer-other">
+    <h2 class="section-title">More</h2>
+    <ul class="nav">
+      <li><a href="https://www.eclipse.org/ide/">IDE and Tools</a></li>
+      <li><a href="https://www.eclipse.org/projects">Projects</a></li>
+      <li><a href="https://www.eclipse.org/org/workinggroups/">Working Groups</a></li>
+      <li><a href="https://www.eclipse.org/org/research/">Research@Eclipse</a></li>
+      <li><a href="https://www.eclipse.org/security/">Report a Vulnerability</a></li>
+      <li><a href="https://status.eclipse.org">Service Status</a></li>
+    </ul>
+  </section>
+
+
+
+
+      
+
+
+
+
+
+      <a href="#" class="scrollup">Back to the top</a>
+    </div>
+  </div>
+  <div class="footer-copyright">
+    <div class="container">
+      
+
+
+
+<div class="col-sm-24 margin-top-20">
+  <div class="row">
+    <div id="copyright" class="col-md-16">
+      <p id="copyright-text">Copyright &copy; Eclipse Foundation AISBL. All Rights Reserved.</p>
+    </div>
+    
+      
+    
+  </div>
+</div>
+
+    </div>
+  </div>
+  
+  
+</footer>
+
+  
+  <div id="footer-js">
+  
+  <script src="/js/solstice.js?v2.3?v=1755585408"></script>
+  
+
+  
+  
+
+  
+  <script>
+  (function($, document) {
+    
+    
+  })(jQuery, document);
+  </script>
+
+  
+</div>
+
+</body>
+</html>
+
