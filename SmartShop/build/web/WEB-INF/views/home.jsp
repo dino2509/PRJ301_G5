@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
-<%@ include file="header.jspf" %>
+<%@ include file="/WEB-INF/views/_includes/header.jspf" %>
+
 <p>${dbStatus}</p>
 
 <h2>Sản phẩm nổi bật</h2>
@@ -9,7 +10,9 @@
   <div class="card">
     <img src="${p.imageUrl}" alt="${p.name}"/>
     <a href="product?id=${p.id}">${p.name}</a>
-    <div>${p.price}</div>
+    <div>
+      <fmt:formatNumber value="${p.price}" type="currency" minFractionDigits="0" maxFractionDigits="0"/>
+    </div>
   </div>
 </c:forEach>
 </div>
@@ -20,7 +23,9 @@
   <div class="card">
     <img src="${p.imageUrl}" alt="${p.name}"/>
     <a href="product?id=${p.id}">${p.name}</a>
-    <div>${p.price}</div>
+    <div>
+      <fmt:formatNumber value="${p.price}" type="currency" minFractionDigits="0" maxFractionDigits="0"/>
+    </div>
   </div>
 </c:forEach>
 </div>
@@ -31,7 +36,9 @@
   <div class="card">
     <img src="${p.imageUrl}" alt="${p.name}"/>
     <a href="product?id=${p.id}">${p.name}</a>
-    <div>${p.price}</div>
+    <div>
+      <fmt:formatNumber value="${p.price}" type="currency" minFractionDigits="0" maxFractionDigits="0"/>
+    </div>
   </div>
 </c:forEach>
 </div>
@@ -55,10 +62,13 @@
   <div class="card">
     <img src="${p.imageUrl}" alt="${p.name}"/>
     <a href="product?id=${p.id}">${p.name}</a>
-    <div>${p.price}</div>
+    <div>
+      <fmt:formatNumber value="${p.price}" type="currency" minFractionDigits="0" maxFractionDigits="0"/>
+    </div>
   </div>
 </c:forEach>
 </div>
+
 <c:set var="pages" value="${(total + size - 1) / size}"/>
 <div class="pagination">
   <c:forEach var="i" begin="1" end="${pages}">

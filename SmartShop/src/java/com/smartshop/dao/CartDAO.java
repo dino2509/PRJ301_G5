@@ -2,11 +2,14 @@ package com.smartshop.dao;
 
 import com.smartshop.model.CartItem;
 import com.smartshop.util.DB;
+import jakarta.servlet.http.HttpSession;
 
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CartDAO {
     
@@ -50,6 +53,51 @@ public class CartDAO {
         try (Connection cn = DB.getConnection()) {
             int cartId = getOpenCartId(cn, userId);
             if (cartId > 0) removeItem(cn, cartId, productId);
+        } catch (Exception ignore) {}
+    }
+    
+
+    public static void safeMergeSessionToUserCart(int userId, Map<Integer, CartItem> sessionCart) {
+        if (sessionCart == null || sessionCart.isEmpty()) return;
+        try (Connection cn = DB.getConnection()) {
+            cn.setAutoCommit(false);
+            int cartId = ensureOpenCart(cn, userId);
+            for (CartItem it : sessionCart.values()) {
+                upsertItemIncrement(cn, cartId, it.getProductId(), it.getQuantity(), it.getPrice());
+            }
+            cn.commit();
+        } catch (Exception ignore) {}
+    }
+
+    public static void safeLoadCartToSession(int userId, HttpSession session) {
+        try (Connection cn = DB.getConnection()) {
+            String qc = qtyCol(cn);
+            String sql = "SELECT ci.product_id, ci." + qc + " AS q, " +
+                         "COALESCE(p.price, ci.unit_price) AS price, " +
+                         "COALESCE(p.name, CONCAT('Product #', ci.product_id)) AS name, " +
+                         "p.image_url " +
+                         "FROM dbo.Carts c " +
+                         "JOIN dbo.CartItems ci ON ci.cart_id=c.id " +
+                         "LEFT JOIN dbo.Products p ON p.id=ci.product_id " +
+                         "WHERE c.user_id=? AND c.status='OPEN'";
+            Map<Integer, CartItem> cart = new LinkedHashMap<>();
+            try (PreparedStatement ps = cn.prepareStatement(sql)) {
+                ps.setInt(1, userId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        int pid = rs.getInt("product_id");
+                        CartItem it = new CartItem(
+                                pid,
+                                rs.getString("name"),
+                                rs.getBigDecimal("price"),
+                                rs.getInt("q"),
+                                rs.getString("image_url")
+                        );
+                        cart.put(pid, it);
+                    }
+                }
+            }
+            session.setAttribute("cart", cart);
         } catch (Exception ignore) {}
     }
 

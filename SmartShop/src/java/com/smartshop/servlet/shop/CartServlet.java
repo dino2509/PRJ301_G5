@@ -2,6 +2,8 @@ package com.smartshop.servlet.shop;
 
 import com.smartshop.model.CartItem;
 import com.smartshop.dao.CartDAO;
+import com.smartshop.dao.ProductDAO;
+import com.smartshop.model.Product;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -14,6 +16,7 @@ import java.util.Map;
 @WebServlet(urlPatterns = {"/cart", "/cart/*"})
 public class CartServlet extends HttpServlet {
     private static final String VIEW_CART = "/WEB-INF/views/shop/cart.jsp";
+    private final ProductDAO productDao = new ProductDAO();
 
     @SuppressWarnings("unchecked")
     private Map<Integer, CartItem> getCart(HttpSession session) {
@@ -70,8 +73,9 @@ public class CartServlet extends HttpServlet {
                     return;
                 }
                 BigDecimal price = CartDAO.safeGetProductPrice(pid, new BigDecimal("1.00"));
-                CartItem item = cart.getOrDefault(pid,
-                        new CartItem(pid, "Product #" + pid, price, 0, null));
+                Product p = productDao.findById(pid);
+                CartItem item = cart.getOrDefault(pid, new CartItem(p.getId(), p.getName(), p.getPrice(), 0, p.getImageUrl()));
+                
                 item.setQuantity(item.getQuantity() + qty);
                 cart.put(pid, item);
 
@@ -140,6 +144,14 @@ public class CartServlet extends HttpServlet {
     }
 
     private String pickFirst(HttpServletRequest req, String... names) {
+        for (String n : names) {
+            String v = req.getParameter(n);
+            if (v != null && !v.isBlank()) return v;
+        }
+        return null;
+    }
+    
+    private String first(HttpServletRequest req, String... names) {
         for (String n : names) {
             String v = req.getParameter(n);
             if (v != null && !v.isBlank()) return v;

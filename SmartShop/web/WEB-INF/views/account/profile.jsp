@@ -3,6 +3,9 @@
 <div class="container">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>Tài khoản của tôi</h2>
+            <c:if test="${sessionScope.isAdmin}">
+          <a href="${pageContext.request.contextPath}/admin/stats">Admin</a>
+        </c:if>
   </div>
 
   <c:if test="${not empty msg}">
