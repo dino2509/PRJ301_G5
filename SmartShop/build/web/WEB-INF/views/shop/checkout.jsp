@@ -7,9 +7,9 @@
   <label>Address <input name="address" style="width:400px" required/></label><br/>
   <label>Payment method
     <select name="payment">
-      <option>COD</option>
-      <option>BankTransfer</option>
-      <option>VNPay</option>
+      <option value="COD">COD</option>
+      <option value="WALLET">Wallet balance</option>
+      <option value="FAKE">Fake gateway (demo)</option>
     </select>
   </label><br/>
   <button type="submit">Place Order</button>

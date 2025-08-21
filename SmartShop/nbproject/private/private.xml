@@ -3,16 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/web/WEB-INF/tlds/format.tld</file>
-            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/src/java/com/smartshop/dao/CartDAO.java</file>
-            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/web/WEB-INF/views/_includes/header.jspf</file>
-            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/src/java/com/smartshop/model/Product.java</file>
-            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/src/java/com/smartshop/dao/ProductDAO.java</file>
-            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/src/java/com/smartshop/util/ElFns.java</file>
-            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/web/WEB-INF/views/header.jspf</file>
-            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/web/WEB-INF/views/shop/cart.jsp</file>
+            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/src/java/com/smartshop/servlet/wallet/WalletServlet.java</file>
+            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/src/java/com/smartshop/filter/AuthFilter.java</file>
+            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/src/java/com/smartshop/filter/AdminFilter.java</file>
+            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/src/java/com/smartshop/servlet/shop/CheckoutServlet.java</file>
             <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/web/WEB-INF/web.xml</file>
-            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/src/java/com/smartshop/servlet/shop/CartServlet.java</file>
         </group>
     </open-files>
 </project-private>
