@@ -20,6 +20,7 @@ public class RegisterServlet extends HttpServlet {
         String email    = req.getParameter("email");
         String full     = req.getParameter("full_name");
         String phone    = req.getParameter("phone");
+        String address    = req.getParameter("address");
 
         if (username==null || username.isBlank() || password==null || password.isBlank()) {
             req.setAttribute("error", "Thiếu username hoặc password");
@@ -29,7 +30,7 @@ public class RegisterServlet extends HttpServlet {
             req.setAttribute("error", "Username đã tồn tại");
             doGet(req, resp); return;
         }
-        userDAO.create(username, email, full, phone, password, "USER");
+        userDAO.create(username, email, full, phone, address, password, "USER");
         resp.sendRedirect(req.getContextPath() + "/login");
     }
 }

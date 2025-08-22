@@ -121,6 +121,7 @@ public class AuthController extends HttpServlet {
         String email = req.getParameter("email");
         String full = req.getParameter("full_name");
         String phone = req.getParameter("phone");
+        String address = req.getParameter("address");
 
         if (username == null || username.isBlank() || password == null || password.isBlank()) {
             req.setAttribute("error", "Thiếu username hoặc password");
@@ -132,7 +133,7 @@ public class AuthController extends HttpServlet {
             req.getRequestDispatcher("/WEB-INF/views/auth/register.jsp").forward(req, resp);
             return;
         }
-        String err = userDAO.createWithError(buildUser(username, email, phone, full), password);
+        String err = userDAO.createWithError(buildUser(username, email, phone, full,address), password);
         if (err != null) {
             req.setAttribute("error", err);
             req.getRequestDispatcher("/WEB-INF/views/auth/register.jsp").forward(req, resp);
@@ -173,6 +174,7 @@ public class AuthController extends HttpServlet {
         auth.setEmail(req.getParameter("email"));
         auth.setPhone(req.getParameter("phone"));
         auth.setFullName(req.getParameter("full_name"));
+        auth.setAddress(req.getParameter("address"));
         boolean ok = userDAO.updateProfile(auth);
         req.setAttribute("msg", ok ? "Cập nhật thành công" : "Cập nhật thất bại");
         req.setAttribute("user", auth);
@@ -330,12 +332,13 @@ public class AuthController extends HttpServlet {
         req.getRequestDispatcher(view).forward(req, resp);
     }
 
-    private static User buildUser(String username, String email, String phone, String full) {
+    private static User buildUser(String username, String email, String phone, String full, String address) {
         User u = new User();
         u.setUsername(username);
         u.setEmail(email);
         u.setPhone(phone);
         u.setFullName(full);
+        u.setAddress(address);
         return u;
     }
 

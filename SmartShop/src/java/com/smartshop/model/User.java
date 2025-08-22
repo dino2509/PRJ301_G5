@@ -9,6 +9,7 @@ public class User {
     private String email;
     private String phone;
     private String fullName;
+    private String address;
     private String status;
     private byte[] passwordSalt;
     private byte[] passwordHash;
@@ -55,6 +56,14 @@ public class User {
     public void setFullName(String v) {
         this.fullName = v;
     }
+    
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String v) {
+        this.address = v;
+    }    
 
     public String getStatus() {
         return status;

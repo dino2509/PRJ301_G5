@@ -32,8 +32,16 @@
       <label>Phone</label>
       <input type="text" name="phone" class="form-control" value="${user.phone}" />
     </div>
+    <div class="mb-3">
+      <label>Address</label>
+      <input type="text" name="address" class="form-control" value="${user.address}" />
+    </div>
+    
     <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-    <a href="${pageContext.request.contextPath}/account/password" class="btn btn-link">Đổi mật khẩu</a>
+    
+    
   </form>
-  <a href="${pageContext.request.contextPath}/logout">Logout</a>
+    <br>
+    <a href="${pageContext.request.contextPath}/account/password" class="btn btn-link">Đổi mật khẩu</a><br>
+    <a href="${pageContext.request.contextPath}/logout">Logout</a>
 </div>

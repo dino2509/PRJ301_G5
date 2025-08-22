@@ -11,6 +11,52 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAO {
+    
+    public static class Profile {
+        public int id;
+        public String username;
+        public String fullName;
+        public String phone;
+        public String email;
+        public String address;
+        public double walletBalance;
+
+        public Profile() {}
+    }   
+    
+        public Profile getProfile(int userId) {
+        String sql = "SELECT id, username, full_name, phone, email, address, wallet_balance FROM dbo.Users WHERE id=?";
+        try (Connection cn = DB.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) return null;
+                Profile p = new Profile();
+                p.id = rs.getInt("id");
+                p.username = rs.getString("username");
+                p.fullName = rs.getString("full_name");
+                p.phone = rs.getString("phone");
+                p.email = rs.getString("email");
+                p.address = rs.getString("address");
+                p.walletBalance = rs.getDouble("wallet_balance");
+                return p;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void updateAddress(int userId, String address) {
+        String sql = "UPDATE dbo.Users SET address=? WHERE id=?";
+        try (Connection cn = DB.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setString(1, address);
+            ps.setInt(2, userId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private User map(ResultSet rs) throws SQLException {
         User u = new User();
@@ -19,6 +65,7 @@ public class UserDAO {
         u.setPasswordHashStr(rs.getString("password_hash"));
         u.setEmail(rs.getString("email"));
         u.setPhone(rs.getString("phone"));
+        u.setAddress(rs.getString("address"));
         u.setFullName(rs.getString("full_name"));
         try { u.setStatus(rs.getString("status")); } catch (SQLException ignore) {}
         try { u.setActive(rs.getBoolean("active")); } catch (SQLException ignore) {}
@@ -96,12 +143,14 @@ public class UserDAO {
     }
 
     public boolean updateProfile(User u) {
-        String sql = "UPDATE Users SET email=?, full_name=?, phone=? WHERE id=?";
+        String sql = "UPDATE Users SET email=?, full_name=?, phone=?, address=? WHERE id=?";
         try (Connection cn = DB.getConnection(); PreparedStatement ps = cn.prepareStatement(sql)) {
             ps.setString(1, u.getEmail());
             ps.setString(2, u.getFullName());
             ps.setString(3, u.getPhone());
-            ps.setInt(4, u.getId());
+            ps.setString(4, u.getAddress());
+            ps.setInt(5, u.getId());
+            
             return ps.executeUpdate() > 0;
         } catch (SQLException e) { throw new RuntimeException(e); }
     }
@@ -118,15 +167,16 @@ public class UserDAO {
             cn.setAutoCommit(false);
             int userId;
             try (PreparedStatement ps = cn.prepareStatement(
-                    "INSERT INTO Users(username,email,full_name,phone,password_salt,password_hash,status) VALUES(?,?,?,?,?,?,?)",
+                    "INSERT INTO Users(username,email,full_name,phone,address,password_salt,password_hash,status) VALUES(?,?,?,?,?,?,?,?)",
                     Statement.RETURN_GENERATED_KEYS)) {
                 ps.setString(1, u.getUsername());
                 ps.setString(2, u.getEmail());
                 ps.setString(3, u.getFullName());
                 ps.setString(4, u.getPhone());
-                ps.setBytes(5, salt);
-                ps.setBytes(6, hash);
-                ps.setString(7, "ACTIVE");
+                ps.setString(5, u.getAddress());
+                ps.setBytes(6, salt);
+                ps.setBytes(7, hash);
+                ps.setString(8, "ACTIVE");
                 ps.executeUpdate();
                 try (ResultSet keys = ps.getGeneratedKeys()) { keys.next(); userId = keys.getInt(1); }
             }
@@ -210,8 +260,8 @@ public class UserDAO {
         return roles;
     }
     
-        public void create(String username, String email, String fullName, String phone, String password, String role) {
-        String sql = "INSERT INTO Users(username,email,full_name,phone,password_salt,password_hash) VALUES(?,?,?,?,?,?)";
+        public void create(String username, String email, String fullName, String phone, String address, String password, String role) {
+        String sql = "INSERT INTO Users(username,email,full_name,phone,address,password_salt,password_hash) VALUES(?,?,?,?,?,?,?)";
         byte[] salt = PasswordUtil.newSalt();
         byte[] hash = PasswordUtil.sha256(salt, password);
         try (Connection c = DB.getConnection()) {
@@ -222,8 +272,9 @@ public class UserDAO {
                 ps.setString(2, email);
                 ps.setString(3, fullName);
                 ps.setString(4, phone);
-                ps.setBytes(5, salt);
-                ps.setBytes(6, hash);
+                ps.setString(5, address);
+                ps.setBytes(6, salt);
+                ps.setBytes(7, hash);
                 ps.executeUpdate();
                 try (ResultSet keys = ps.getGeneratedKeys()) { keys.next(); userId = keys.getInt(1); }
             }
@@ -240,13 +291,14 @@ public class UserDAO {
     }
 
     public void update(User u) {
-        String sql = "UPDATE Users SET email=?, full_name=?, phone=?, status=? WHERE id=?";
+        String sql = "UPDATE Users SET email=?, full_name=?, phone=?, address=? status=? WHERE id=?";
         try (Connection c = DB.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, u.getEmail());
             ps.setString(2, u.getFullName());
             ps.setString(3, u.getPhone());
-            ps.setString(4, u.getStatus());
-            ps.setInt(5, u.getId());
+            ps.setString(4, u.getAddress());
+            ps.setString(5, u.getStatus());
+            ps.setInt(6, u.getId());
             ps.executeUpdate();
         } catch (SQLException e) { throw new RuntimeException(e); }
     }

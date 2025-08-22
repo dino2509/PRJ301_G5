@@ -2,6 +2,65 @@ package com.smartshop.dao;
 import com.smartshop.util.DB; import java.sql.*; import java.util.*; import java.math.*;
 
 public class OrderDAO {
+    
+    public static class Item {
+        public int productId;
+        public int qty;
+        public BigDecimal price;
+        public Item(int productId, int qty, BigDecimal price) {
+            this.productId = productId; this.qty = qty; this.price = price;
+        }
+    }
+
+    public int createOrder(int userId,
+                           String fullName, String phone, String email, String address,
+                           String paymentMethod, boolean paid, BigDecimal total,
+                           List<Item> items) {
+        String oSql = "INSERT INTO dbo.Orders(user_id, full_name, phone, email, address, total, payment_method, payment_status) " +
+                      "VALUES(?,?,?,?,?,?,?,?)";
+        String iSql = "INSERT INTO dbo.OrderItems(order_id, product_id, qty, price) VALUES(?,?,?,?)";
+        try (Connection cn = DB.getConnection()) {
+            cn.setAutoCommit(false);
+            try (PreparedStatement psO = cn.prepareStatement(oSql, Statement.RETURN_GENERATED_KEYS)) {
+                psO.setInt(1, userId);
+                psO.setString(2, fullName);
+                psO.setString(3, phone);
+                psO.setString(4, email);
+                psO.setString(5, address);
+                psO.setBigDecimal(6, total);
+                psO.setString(7, paymentMethod);
+                psO.setString(8, paid ? "PAID" : "PENDING");
+                psO.executeUpdate();
+                int orderId;
+                try (ResultSet keys = psO.getGeneratedKeys()) {
+                    keys.next();
+                    orderId = keys.getInt(1);
+                }
+                try (PreparedStatement psI = cn.prepareStatement(iSql)) {
+                    for (Item it : items) {
+                        psI.setInt(1, orderId);
+                        psI.setInt(2, it.productId);
+                        psI.setInt(3, it.qty);
+                        psI.setBigDecimal(4, it.price);
+                        psI.addBatch();
+                    }
+                    psI.executeBatch();
+                }
+                cn.commit();
+                return orderId;
+            } catch (SQLException ex) {
+                cn.rollback();
+                throw ex;
+            } finally {
+                cn.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static String nvl(String s){ return s==null? "": s; }
+    
     public int createOrderFromCart(int userId, String shipName, String shipPhone, String shipAddr, String paymentMethod){
         try(Connection c=DB.getConnection()){
             c.setAutoCommit(false);

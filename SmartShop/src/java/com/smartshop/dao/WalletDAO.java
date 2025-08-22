@@ -11,14 +11,14 @@ import java.util.List;
 public class WalletDAO {
 
     public BigDecimal getBalance(int userId) {
-        String sql = "SELECT balance FROM dbo.Wallets WHERE user_id=?";
-        try (Connection c = DB.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
+        String sql = "SELECT wallet_balance FROM dbo.Users WHERE id=?";
+        try (Connection cn = DB.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
             ps.setInt(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) return rs.getBigDecimal(1);
+                return BigDecimal.ZERO;
             }
-            return BigDecimal.ZERO;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -188,6 +188,74 @@ public class WalletDAO {
                 p4.executeUpdate();
             }
             c.commit();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+        public void topup(int userId, BigDecimal amount, String description) {
+        String up = "UPDATE dbo.Users SET wallet_balance = wallet_balance + ? WHERE id=?";
+        String tx = "INSERT INTO dbo.WalletTransactions(user_id, type, amount, description) VALUES(?, 'TOPUP', ?, ?)";
+        try (Connection cn = DB.getConnection()) {
+            cn.setAutoCommit(false);
+            try (PreparedStatement ps1 = cn.prepareStatement(up);
+                 PreparedStatement ps2 = cn.prepareStatement(tx)) {
+                ps1.setBigDecimal(1, amount);
+                ps1.setInt(2, userId);
+                ps1.executeUpdate();
+
+                ps2.setInt(1, userId);
+                ps2.setBigDecimal(2, amount);
+                ps2.setString(3, description);
+                ps2.executeUpdate();
+
+                cn.commit();
+            } catch (SQLException ex) {
+                cn.rollback();
+                throw ex;
+            } finally {
+                cn.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean payWithWallet(int userId, BigDecimal amount, String description) {
+        String check = "SELECT wallet_balance FROM dbo.Users WITH (UPDLOCK, ROWLOCK) WHERE id=?";
+        String dec = "UPDATE dbo.Users SET wallet_balance = wallet_balance - ? WHERE id=?";
+        String tx  = "INSERT INTO dbo.WalletTransactions(user_id, type, amount, description) VALUES(?, 'PAYMENT', ?, ?)";
+        try (Connection cn = DB.getConnection()) {
+            cn.setAutoCommit(false);
+            try (PreparedStatement psC = cn.prepareStatement(check)) {
+                psC.setInt(1, userId);
+                BigDecimal bal;
+                try (ResultSet rs = psC.executeQuery()) {
+                    if (!rs.next()) { cn.rollback(); return false; }
+                    bal = rs.getBigDecimal(1);
+                }
+                if (bal.compareTo(amount) < 0) { cn.rollback(); return false; }
+
+                try (PreparedStatement psD = cn.prepareStatement(dec);
+                     PreparedStatement psT = cn.prepareStatement(tx)) {
+                    psD.setBigDecimal(1, amount);
+                    psD.setInt(2, userId);
+                    psD.executeUpdate();
+
+                    psT.setInt(1, userId);
+                    psT.setBigDecimal(2, amount);
+                    psT.setString(3, description);
+                    psT.executeUpdate();
+
+                    cn.commit();
+                    return true;
+                }
+            } catch (SQLException ex) {
+                cn.rollback();
+                throw ex;
+            } finally {
+                cn.setAutoCommit(true);
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

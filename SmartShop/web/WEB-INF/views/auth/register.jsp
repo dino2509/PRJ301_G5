@@ -8,6 +8,7 @@
   <label>Email <input name="email"/></label><br/>
   <label>Full name <input name="full_name"/></label><br/>
   <label>Phone <input name="phone"/></label><br/>
+  <label>Address <input name="address"/></label><br/>
   <button type="submit">Create account</button>
 </form>
 <p><a href="${pageContext.request.contextPath}/login">Back to login</a></p>
