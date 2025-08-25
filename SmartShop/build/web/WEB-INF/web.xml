@@ -213,6 +213,20 @@
     <servlet-name>PaymentIpnServlet</servlet-name>
     <url-pattern>/payment/ipn</url-pattern>
   </servlet-mapping>
+  
+  <servlet>
+  <servlet-name>TransactionHistoryServlet</servlet-name>
+  <servlet-class>com.smartshop.servlet.wallet.TransactionHistoryServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+  <servlet-name>TransactionHistoryServlet</servlet-name>
+  <url-pattern>/transaction_history</url-pattern>
+</servlet-mapping>
+<!-- alias cho typo cũ -->
+<servlet-mapping>
+  <servlet-name>TransactionHistoryServlet</servlet-name>
+  <url-pattern>/transcation_history</url-pattern>
+</servlet-mapping>
 
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>

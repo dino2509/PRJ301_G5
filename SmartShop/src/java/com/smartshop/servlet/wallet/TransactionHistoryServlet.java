@@ -45,14 +45,10 @@ public class TransactionHistoryServlet extends HttpServlet {
     }
 
     private List<Map<String,Object>> queryWalletTx(Connection con, int uid) {
-        // cột có thể khác nhau giữa máy — cố gắng đọc an toàn
         String sql = "SELECT TOP 200 " +
                 "COALESCE(try_cast(transaction_id as nvarchar(50)), try_cast(id as nvarchar(50))) AS id, " +
-                "amount, " +
-                "COALESCE([type],'') AS type, " +
-                "COALESCE([status],'') AS status, " +
-                "COALESCE([note],'') AS note, " +
-                "COALESCE([ref_id], NULL) AS ref_id, " +
+                "amount, COALESCE([type],'') AS type, COALESCE([status],'') AS status, " +
+                "COALESCE([note],'') AS note, COALESCE([ref_id], NULL) AS ref_id, " +
                 "COALESCE([created_at], SYSUTCDATETIME()) AS created_at " +
                 "FROM dbo.WalletTransactions WHERE user_id=? ORDER BY created_at DESC";
         List<Map<String,Object>> rows = new ArrayList<>();

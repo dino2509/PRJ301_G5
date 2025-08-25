@@ -3,6 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <fmt:setLocale value="vi_VN" scope="session"/>
 <%@ include file="/WEB-INF/views/_includes/header.jspf" %>
+
 <h2>Lịch sử giao dịch</h2>
 <c:if test="${not empty txError}"><p style="color:#a00">${txError}</p></c:if>
 
