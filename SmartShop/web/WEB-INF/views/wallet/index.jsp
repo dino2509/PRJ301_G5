@@ -15,11 +15,12 @@
 </c:if>
 
 <p>Số dư: <strong><fmt:formatNumber value="${balance}" type="currency"/></strong></p>
+<c:if test="${not empty walletSuccess}"><p style="color:green">${walletSuccess}</p></c:if>
+<c:if test="${not empty walletError}"><p style="color:#a00">${walletError}</p></c:if>
 
-<form method="post" action="${pageContext.request.contextPath}/wallet" style="margin-top:12px">
-  <input type="hidden" name="action" value="topup"/>
-  <label>Số tiền nạp
-    <input type="number" name="amount" min="1000" step="1000"/>
-  </label>
-  <button type="submit">Nạp tiền</button>
+<form method="post" action="${pageContext.request.contextPath}/wallet">
+  <input type="hidden" name="action" value="topup">
+  <input type="number" name="amount" min="1" step="1" required>
+  <button type="submit">Nạp</button>
 </form>
+

@@ -1,10 +1,10 @@
 package com.smartshop.servlet.cart;
 
-import com.smartshop.dao.OrderDAO;
+import com.smartshop.dao.ProductDAO;
 import com.smartshop.dao.UserDAO;
-import com.smartshop.dao.WalletDAO;
 import com.smartshop.model.CartItem;
-import jakarta.servlet.RequestDispatcher;
+import com.smartshop.model.Product;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -12,303 +12,211 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 
-@WebServlet(name = "CartServlet", urlPatterns = {"/cart", "/cart/*"})
+@WebServlet(urlPatterns = {"/cart", "/cart/*"})
 public class CartServlet extends HttpServlet {
+    private static final String VIEW_CART = "/WEB-INF/views/shop/cart.jsp";
+    private final ProductDAO productDao = new ProductDAO();
 
-    // ví dụ package của bạn: com.smartshop.servlet.shop
-    private void pushAcc(HttpServletRequest req) {
+    @SuppressWarnings("unchecked")
+    private Map<Integer, Object> getRawCart(HttpSession session) {
+        Object o = session.getAttribute("cart");
+        if (o == null) {
+            Map<Integer, Object> cart = new LinkedHashMap<>();
+            session.setAttribute("cart", cart);
+            return cart;
+        }
+        return (Map<Integer, Object>) o;
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        handle(req, resp);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        handle(req, resp);
+    }
+
+    private void handle(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        String info = req.getPathInfo(); // null, "/", "/add", "/update", "/remove"
+
+        if (info == null || "/".equals(info)) {
+            if (isUpdate(req))      info = "/update";
+            else if (isRemove(req)) info = "/remove";
+            else if (isAdd(req))    info = "/add";
+            else                    info = "/";
+        }
+
+        HttpSession session = req.getSession();
+        Map<Integer, Object> cart = getRawCart(session);
+
+        if ("/".equals(info)) {
+            req.setAttribute("cartItems", buildViewItems(cart));
+            pushAcc(req);
+            req.getRequestDispatcher(VIEW_CART).forward(req, resp);
+            return;
+        }
+
+        int pid = readProductId(req);
+        int qty = readQty(req);
+
+        switch (info) {
+            case "/add": {
+                if (pid < 0) { resp.sendRedirect(req.getContextPath() + "/cart"); return; }
+                Product p = productDao.findById(pid);
+                if (p == null) { resp.sendRedirect(req.getContextPath() + "/cart"); return; }
+
+                Object cur = cart.get(pid);
+                if (cur instanceof CartItem) {
+                    CartItem ci = (CartItem) cur;
+                    int newQty = (ci.getQuantity() > 0 ? ci.getQuantity() : ci.getQty()) + (qty <= 0 ? 1 : qty);
+                    ci.setQuantity(newQty);
+                    ci.setQty(newQty);
+                    ci.setName(p.getName());
+                    ci.setPrice(p.getPrice());
+                    ci.setImageUrl(p.getImageUrl());
+                    ci.setProductId(p.getId());
+                } else if (cur instanceof CartLine) {
+                    CartLine cl = (CartLine) cur;
+                    cl.qty += (qty <= 0 ? 1 : qty);
+                } else {
+                    CartItem item = new CartItem();
+                    item.setProductId(p.getId());
+                    item.setName(p.getName());
+                    item.setPrice(p.getPrice());
+                    item.setImageUrl(p.getImageUrl());
+                    item.setQuantity(qty <= 0 ? 1 : qty);
+                    item.setQty(item.getQuantity());
+                    cart.put(pid, item);
+                }
+                break;
+            }
+            case "/update": {
+                if (pid >= 0) {
+                    Object cur = cart.get(pid);
+                    if (cur instanceof CartItem) {
+                        CartItem ci = (CartItem) cur;
+                        if (qty <= 0) cart.remove(pid);
+                        else { ci.setQuantity(qty); ci.setQty(qty); }
+                    } else if (cur instanceof CartLine) {
+                        if (qty <= 0) cart.remove(pid);
+                        else ((CartLine) cur).qty = qty;
+                    }
+                }
+                break;
+            }
+            case "/remove": {
+                if (pid >= 0) cart.remove(pid);
+                break;
+            }
+            default: {
+                req.setAttribute("cartItems", buildViewItems(cart));
+                pushAcc(req);
+                req.getRequestDispatcher(VIEW_CART).forward(req, resp);
+                return;
+            }
+        }
+        resp.sendRedirect(req.getContextPath() + "/cart");
+    }
+
+    private List<ViewItem> buildViewItems(Map<Integer, Object> cart){
+        List<ViewItem> list = new ArrayList<>();
+        if (cart == null) return list;
+        for (Map.Entry<Integer,Object> e : cart.entrySet()) {
+            int pid = e.getKey();
+            int qty = 0;
+            Product p = null;
+
+            if (e.getValue() instanceof CartItem) {
+                CartItem it = (CartItem) e.getValue();
+                qty = it.getQuantity() > 0 ? it.getQuantity() : it.getQty();
+                BigDecimal price = it.getPrice()!=null ? it.getPrice() : it.getUnitPrice();
+                String name = it.getName()!=null ? it.getName() : it.getProductName();
+                String img = it.getImageUrl();
+                p = productDao.findById(pid);
+                if (p == null) { p = new Product(); p.setId(pid); p.setName(name); p.setPrice(price); p.setImageUrl(img); }
+            } else if (e.getValue() instanceof CartLine) {
+                CartLine cl = (CartLine) e.getValue();
+                qty = Math.max(1, cl.qty);
+                p = cl.product != null ? cl.product : productDao.findById(pid);
+                if (p == null) { p = new Product(); p.setId(pid); }
+            } else continue;
+
+            if (p == null) p = productDao.findById(pid);
+            if (p == null) continue;
+
+            list.add(new ViewItem(p, qty));
+        }
+        return list;
+    }
+
+    private void pushAcc(HttpServletRequest req){
         HttpSession s = req.getSession(false);
         Integer userId = null;
         if (s != null) {
             Object v = s.getAttribute("uid");
-            if (v instanceof Integer) {
-                userId = (Integer) v;
-            } else if (v instanceof String) try {
-                userId = Integer.valueOf((String) v);
-            } catch (Exception ignore) {
-            }
+            if (v instanceof Integer) userId = (Integer) v;
+            else if (v instanceof String) try { userId = Integer.valueOf((String) v);} catch (Exception ignore){}
         }
-
-        // Ưu tiên lấy object user sẵn có trong session nếu bạn đã set
-        Object accObj
-                = (s != null && s.getAttribute("authUser") != null) ? s.getAttribute("authUser")
-                : (s != null && s.getAttribute("user") != null) ? s.getAttribute("user")
-                : (s != null && s.getAttribute("account") != null) ? s.getAttribute("account") : null;
+        Object accObj = (s != null)? s.getAttribute("authUser") : null;
 
         String fullName = null, phone = null, email = null, address = null;
-
         try {
             if (accObj != null) {
-                // getter phải tồn tại: getFullName/getPhone/getEmail/getAddress
-                var u = accObj;
-                fullName = (String) u.getClass().getMethod("getFullName").invoke(u);
-                phone = (String) u.getClass().getMethod("getPhone").invoke(u);
-                email = (String) u.getClass().getMethod("getEmail").invoke(u);
-                address = (String) u.getClass().getMethod("getAddress").invoke(u);
+                fullName = (String) accObj.getClass().getMethod("getFullName").invoke(accObj);
+                phone    = (String) accObj.getClass().getMethod("getPhone").invoke(accObj);
+                email    = (String) accObj.getClass().getMethod("getEmail").invoke(accObj);
+                address  = (String) accObj.getClass().getMethod("getAddress").invoke(accObj);
             } else if (userId != null) {
-                // fallback DB
-                var u = new com.smartshop.dao.UserDAO().findById(userId);
-                if (u != null) {
-                    fullName = u.getFullName();
-                    phone = u.getPhone();
-                    email = u.getEmail();
-                    address = u.getAddress();
-                }
+                var u = new UserDAO().findById(userId);
+                if (u != null) { fullName=u.getFullName(); phone=u.getPhone(); email=u.getEmail(); address=u.getAddress(); }
             }
-        } catch (Exception ignore) {
-        }
-
-        if (fullName == null) {
-            fullName = "";
-        }
-        if (phone == null) {
-            phone = "";
-        }
-        if (email == null) {
-            email = "";
-        }
-        if (address == null) {
-            address = "";
-        }
-
+        } catch (Exception ignore) { }
         req.setAttribute("accFullName", fullName);
         req.setAttribute("accPhone", phone);
         req.setAttribute("accEmail", email);
         req.setAttribute("accAddress", address);
     }
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-
-        HttpSession s = req.getSession(true);
-        Map<Integer, CartItem> cart = getCart(s);
-        BigDecimal total = cart.values().stream()
-                .map(CartItem::getSubtotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        // set account info vào request để cart.jsp auto đổ
-        Integer userId = uid(req);
-        if (userId != null) {
-            var u = new UserDAO().findById(userId);
-            if (u != null) {
-                req.setAttribute("accFullName", nvl(u.getFullName()));
-                req.setAttribute("accPhone", nvl(u.getPhone()));
-                req.setAttribute("accEmail", nvl(u.getEmail()));
-                req.setAttribute("accAddress", nvl(u.getAddress()));
-            }
-        }
-
-        req.setAttribute("total", total);
-        pushAcc(req);
-        req.getRequestDispatcher("/WEB-INF/views/shop/cart.jsp").forward(req, resp); // phải là forward, không redirect
-
+    private boolean isAdd(HttpServletRequest req) {
+        String act = lower(pickFirst(req, "action", "op", "act", "btn", "submit"));
+        if ("add".equals(act) || hasParam(req, "add") || hasParam(req, "addToCart")) return true;
+        return readProductId(req) >= 0 && !isUpdate(req) && !isRemove(req);
     }
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-
-        String path = req.getPathInfo();
-        String action = req.getParameter("action");
-
-        if (path != null) {
-            path = path.trim();
-        }
-        if ("/update".equalsIgnoreCase(path)) {
-            update(req, resp);
-            return;
-        }
-        if ("/remove".equalsIgnoreCase(path)) {
-            remove(req, resp);
-            return;
-        }
-        if ("/clear".equalsIgnoreCase(path)) {
-            clear(req, resp);
-            return;
-        }
-        if ("/add".equalsIgnoreCase(path)) {
-            add(req, resp);
-            return;
-        }
-
-        if ("placeOrder".equalsIgnoreCase(action) || path == null || "/".equals(path)) {
-            placeOrder(req, resp);
-            return;
-        }
-
-        resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+    private boolean isUpdate(HttpServletRequest req) {
+        String act = lower(pickFirst(req, "action", "op", "act", "btn", "submit"));
+        return "update".equals(act) || hasParam(req, "update");
     }
-
-    private void add(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        HttpSession s = req.getSession(true);
-        Map<Integer, CartItem> cart = getCart(s);
-
-        int id = parseInt(req.getParameter("id"), -1);
-        int qty = Math.max(1, parseInt(req.getParameter("qty"), 1));
-        if (id <= 0) {
-            resp.sendRedirect(req.getContextPath() + "/cart");
-            return;
-        }
-
-        CartItem it = cart.get(id);
-        if (it == null) {
-            // Tối thiểu tạo item với id + qty; name/price/image nên được điền ở nơi khác tuỳ dự án
-            it = new CartItem();
-            it.setProductId(id);
-            it.setName("Product #" + id);
-            it.setPrice(new java.math.BigDecimal("0"));
-            it.setQuantity(qty);
-            cart.put(id, it);
-        } else {
-            it.setQuantity(it.getQuantity() + qty);
-        }
-        s.setAttribute("cart", cart);
-        resp.sendRedirect(req.getContextPath() + "/cart");
+    private boolean isRemove(HttpServletRequest req) {
+        String act = lower(pickFirst(req, "action", "op", "act", "btn", "submit"));
+        return "remove".equals(act) || hasParam(req, "remove") || hasParam(req, "delete");
     }
-
-    private void update(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        HttpSession s = req.getSession(true);
-        Map<Integer, CartItem> cart = getCart(s);
-
-        int id = parseInt(req.getParameter("id"), -1);
-        int qty = Math.max(1, parseInt(req.getParameter("qty"), 1));
-        CartItem it = cart.get(id);
-        if (it != null) {
-            it.setQuantity(qty);
-        }
-
-        s.setAttribute("cart", cart);
-        resp.sendRedirect(req.getContextPath() + "/cart");
+    private int readProductId(HttpServletRequest req) {
+        String v = pickFirst(req, "id", "productId", "pid", "product_id", "pId", "prodId");
+        return parseInt(v, -1);
     }
-
-    private void remove(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        HttpSession s = req.getSession(true);
-        Map<Integer, CartItem> cart = getCart(s);
-        int id = parseInt(req.getParameter("id"), -1);
-        cart.remove(id);
-        s.setAttribute("cart", cart);
-        resp.sendRedirect(req.getContextPath() + "/cart");
+    private int readQty(HttpServletRequest req) {
+        String v = pickFirst(req, "qty", "quantity", "q");
+        int q = parseInt(v, 1);
+        return q <= 0 ? 1 : q;
     }
-
-    private void clear(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        HttpSession s = req.getSession(true);
-        s.setAttribute("cart", new LinkedHashMap<Integer, CartItem>());
-        resp.sendRedirect(req.getContextPath() + "/cart");
-    }
-
-    private void placeOrder(HttpServletRequest req, HttpServletResponse resp)
-            throws IOException, ServletException {
-
-        HttpSession s = req.getSession(true);
-        Map<Integer, CartItem> cart = getCart(s);
-        if (cart.isEmpty()) {
-            req.setAttribute("error", "Giỏ hàng trống");
-            doGet(req, resp);
-            return;
-        }
-
-        Integer userId = uid(req);
-        if (userId == null) {
-            throw new RuntimeException("Please login");
-        }
-
-        String pm = nvl(req.getParameter("pm")); // COD | WALLET | GATEWAY
-        if (pm.isEmpty()) {
-            pm = "COD";
-        }
-
-        // Nếu dùng account thì ép từ DB, bỏ qua input client
-        boolean useAcc = "1".equals(req.getParameter("useAccount"));
-        String fullName, phone, email, address;
-        if (useAcc) {
-            var u = new UserDAO().findById(userId);
-            if (u == null) {
-                throw new RuntimeException("Please login");
-            }
-            fullName = nvl(u.getFullName());
-            phone = nvl(u.getPhone());
-            email = nvl(u.getEmail());
-            address = nvl(u.getAddress());
-        } else {
-            fullName = nvl(req.getParameter("fullName"));
-            phone = nvl(req.getParameter("phone"));
-            email = nvl(req.getParameter("email"));
-            address = nvl(req.getParameter("address"));
-        }
-
-        // Tính tiền
-        java.math.BigDecimal total = cart.values().stream()
-                .map(CartItem::getSubtotal)
-                .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
-
-        boolean paid = false;
-        if ("WALLET".equals(pm)) {
-            WalletDAO w = new WalletDAO();
-            boolean ok = w.payWithWallet(userId, total, "Order payment");
-            if (!ok) {
-                req.setAttribute("error", "Số dư ví không đủ.");
-                doGet(req, resp);
-                return;
-            }
-            paid = true;
-        } else if ("GATEWAY".equals(pm)) {
-            paid = true; // giả lập cổng thanh toán
-        }
-
-        // Build items
-        java.util.List<OrderDAO.Item> items = new java.util.ArrayList<>();
-        for (CartItem ci : cart.values()) {
-            items.add(new OrderDAO.Item(ci.getProductId(), ci.getQuantity(), ci.getPrice()));
-        }
-
-        // Tạo đơn
-        int orderId = new OrderDAO().createOrder(
-                userId, fullName, phone, email, address, pm, paid, total, items
-        );
-
-        // Xoá giỏ
-        s.setAttribute("cart", new LinkedHashMap<Integer, CartItem>());
-
-        resp.sendRedirect(req.getContextPath() + "/orders/confirm?id=" + orderId);
-    }
-
-    private Integer uid(HttpServletRequest req) {
-        HttpSession s = req.getSession(false);
-        if (s == null) {
-            return null;
-        }
-        Object v = s.getAttribute("uid");
-        if (v instanceof Integer) {
-            return (Integer) v;
-        }
-        if (v instanceof String) try {
-            return Integer.valueOf((String) v);
-        } catch (Exception ignored) {
+    private String pickFirst(HttpServletRequest req, String... names){
+        for (String n : names) {
+            String v = req.getParameter(n);
+            if (v != null && !v.isBlank()) return v;
         }
         return null;
     }
+    private boolean hasParam(HttpServletRequest req, String name) { return req.getParameter(name) != null; }
+    private String lower(String s) { return s == null ? null : s.toLowerCase(); }
+    private int parseInt(String s, int defVal) { try { return Integer.parseInt(s); } catch (Exception e) { return defVal; } }
 
-    @SuppressWarnings("unchecked")
-    private Map<Integer, CartItem> getCart(HttpSession s) {
-        Object o = s.getAttribute("cart");
-        if (o instanceof Map) {
-            return (Map<Integer, CartItem>) o;
-        }
-        Map<Integer, CartItem> m = new LinkedHashMap<>();
-        s.setAttribute("cart", m);
-        return m;
-    }
-
-    private static int parseInt(String s, int defVal) {
-        try {
-            return Integer.parseInt(s);
-        } catch (Exception e) {
-            return defVal;
-        }
-    }
-
-    private static String nvl(String s) {
-        return s == null ? "" : s.trim();
-    }
+    // Legacy compatibility
+    static class CartLine { Product product; int qty; CartLine(Product p, int q){ this.product=p; this.qty=q; } }
+    static class ViewItem { public final Product product; public final int qty; ViewItem(Product p, int q){ this.product=p; this.qty=q; } public Product getProduct(){ return product; } public int getQty(){ return qty; } }
 }

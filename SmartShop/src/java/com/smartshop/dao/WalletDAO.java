@@ -5,31 +5,156 @@ import com.smartshop.util.DB;
 
 import java.math.BigDecimal;
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WalletDAO {
+/**
+ * WalletDAO compatible with existing code paths.
+ * Uses snake_case columns: user_id, balance, updated_at in table Wallets,
+ * and user_id, amount, type, ref_id, related_id, note, created_at in WalletTransactions.
+ * Creates missing tables if needed. Does not rename existing columns.
+ */
+public class WalletDAO implements AutoCloseable {
+    private final Connection con;
+    private final boolean own;
 
-    public BigDecimal getBalance(int userId) {
-        String sql = "SELECT wallet_balance FROM dbo.Users WHERE id=?";
-        try (Connection cn = DB.getConnection();
-             PreparedStatement ps = cn.prepareStatement(sql)) {
-            ps.setInt(1, userId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return rs.getBigDecimal(1);
-                return BigDecimal.ZERO;
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+    public WalletDAO(Connection con){ this.con = con; this.own = false; }
+    public WalletDAO() throws SQLException { this.con = com.smartshop.util.DB.getConnection(); this.own = true; }
+    @Override public void close(){ if (own) try{ con.close(); }catch(Exception ignore){} }
+
+    private void ensureTables() throws SQLException {
+        try (Statement st = con.createStatement()) {
+            st.execute("""
+              IF OBJECT_ID('dbo.Wallets','U') IS NULL
+              BEGIN
+                CREATE TABLE dbo.Wallets(
+                  user_id INT PRIMARY KEY,
+                  balance DECIMAL(19,2) NOT NULL CONSTRAINT DF_Wallets_balance DEFAULT(0),
+                  updated_at DATETIME2 NOT NULL CONSTRAINT DF_Wallets_updated_at DEFAULT SYSUTCDATETIME()
+                );
+              END
+            """);
+            st.execute("""
+              IF OBJECT_ID('dbo.WalletTransactions','U') IS NULL
+              BEGIN
+                CREATE TABLE dbo.WalletTransactions(
+                  id BIGINT IDENTITY(1,1) PRIMARY KEY,
+                  user_id INT NOT NULL,
+                  amount DECIMAL(19,2) NOT NULL,
+                  type NVARCHAR(20) NULL,
+                  note NVARCHAR(255) NULL,
+                  created_at DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
+                );
+              END
+            """);
         }
     }
 
-    public List<WalletTx> listTx(int userId, int limit) {
-        String sql = "SELECT TOP (?) id, user_id, type, amount, status, ref_order_id, created_at " +
-                     "FROM dbo.WalletTransactions WHERE user_id=? ORDER BY id DESC";
+    public void ensureWallet(int userId) throws SQLException {
+        ensureTables();
+        try (PreparedStatement ps = con.prepareStatement("""
+            IF NOT EXISTS(SELECT 1 FROM dbo.Wallets WHERE user_id=?)
+            BEGIN
+              INSERT INTO dbo.Wallets(user_id, balance) VALUES(?, 0);
+            END
+        """)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, userId);
+            ps.executeUpdate();
+        }
+    }
+
+    public BigDecimal getBalance(int userId) throws SQLException {
+        ensureWallet(userId);
+        try (PreparedStatement ps = con.prepareStatement("SELECT balance FROM dbo.Wallets WHERE user_id=?")) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) { return rs.next()? rs.getBigDecimal(1) : BigDecimal.ZERO; }
+        }
+    }
+
+    public void addBalance(int userId, BigDecimal amount, Long refId, String note) throws SQLException {
+        addBalance(userId, amount, refId, note, (refId==null?"ADJUST":"TOPUP"));
+    }
+
+    public void addBalance(int userId, BigDecimal amount, Long refId, String note, String type) throws SQLException {
+        ensureWallet(userId);
+        boolean prev = con.getAutoCommit();
+        con.setAutoCommit(false);
+        try (PreparedStatement up = con.prepareStatement(
+                 "UPDATE dbo.Wallets SET balance=balance+?, updated_at=SYSUTCDATETIME() WHERE user_id=?")) {
+            up.setBigDecimal(1, amount);
+            up.setInt(2, userId);
+            if (up.executeUpdate()!=1) throw new SQLException("Wallet row missing");
+
+            final String table = "dbo.WalletTransactions";
+            boolean hasType   = hasColumn(table, "type");
+            boolean hasRef    = hasColumn(table, "ref_id");
+            boolean hasRel    = hasColumn(table, "related_id");
+            boolean hasNote   = hasColumn(table, "note");
+            boolean hasStatus = hasColumn(table, "status");
+            boolean statusNN  = hasStatus && isNotNullable(table, "status"); // cần giá trị
+
+            // Xây câu lệnh INSERT theo cột thực tế
+            StringBuilder cols = new StringBuilder("user_id,amount");
+            StringBuilder qs   = new StringBuilder("?,?");
+            if (hasType)   { cols.append(",type");   qs.append(",?"); }
+            if (hasRef)    { cols.append(",ref_id"); qs.append(",?"); }
+            if (hasRel)    { cols.append(",related_id"); qs.append(",?"); }
+            if (hasNote)   { cols.append(",note");   qs.append(",?"); }
+            if (hasStatus) { cols.append(",status"); qs.append(",?"); }
+
+            String sql = "INSERT INTO "+table+"("+cols+") VALUES ("+qs+")";
+            try (PreparedStatement ins = con.prepareStatement(sql)) {
+                int i=1;
+                ins.setInt(i++, userId);
+                ins.setBigDecimal(i++, amount);
+                if (hasType)   ins.setString(i++, type);
+                if (hasRef)    { if (refId==null) ins.setNull(i++, Types.BIGINT); else ins.setLong(i++, refId); }
+                if (hasRel)    ins.setNull(i++, Types.BIGINT);
+                if (hasNote)   ins.setString(i++, note);
+                if (hasStatus) ins.setString(i++, statusNN ? "SUCCESS" : "SUCCESS"); // luôn set "SUCCESS"
+                ins.executeUpdate();
+            }
+
+            con.commit();
+        } catch(SQLException ex){
+            con.rollback();
+            throw ex;
+        } finally { con.setAutoCommit(prev); }
+    }
+
+    private boolean hasColumn(String table, String col) throws SQLException {
+        try (PreparedStatement ps = con.prepareStatement(
+                "SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(?) AND name = ?")) {
+            ps.setString(1, table);
+            ps.setString(2, col);
+            try (ResultSet rs = ps.executeQuery()) { return rs.next(); }
+        }
+    }
+
+    private boolean isNotNullable(String table, String col) throws SQLException {
+        try (PreparedStatement ps = con.prepareStatement(
+                "SELECT is_nullable FROM sys.columns WHERE object_id = OBJECT_ID(?) AND name = ?")) {
+            ps.setString(1, table);
+            ps.setString(2, col);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1)==0;
+                return false;
+            }
+        }
+    }
+
+    /** Fetch recent transactions for a user. */
+    public List<WalletTx> findRecentTx(int userId, int limit) {
         List<WalletTx> list = new ArrayList<>();
-        try (Connection c = DB.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
+        if (limit <= 0) limit = 50;
+        try (PreparedStatement ps = con.prepareStatement("""
+                SELECT TOP (?) id, user_id, amount, type, ref_id, related_id, note, created_at
+                FROM dbo.WalletTransactions
+                WHERE user_id=?
+                ORDER BY id DESC
+            """)) {
             ps.setInt(1, limit);
             ps.setInt(2, userId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -39,225 +164,18 @@ public class WalletDAO {
                     t.setUserId(rs.getInt("user_id"));
                     t.setType(rs.getString("type"));
                     t.setAmount(rs.getBigDecimal("amount"));
-                    t.setStatus(rs.getString("status"));
-                    int oid = rs.getInt("ref_order_id");
+                    try { t.setStatus(null); } catch (Exception ignore) {}
+                    int oid = rs.getInt("related_id");
                     t.setRefOrderId(rs.wasNull() ? null : oid);
                     Timestamp ts = rs.getTimestamp("created_at");
-                    t.setCreatedAt(ts == null ? null : ts.toLocalDateTime());
+                    LocalDateTime ldt = ts == null ? null : ts.toLocalDateTime();
+                    try { t.setCreatedAt(ldt); } catch (Exception ignore) {}
                     list.add(t);
                 }
             }
-            return list;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /** Create a topup request in PENDING status. */
-    public int createTopupRequest(int userId, BigDecimal amount) {
-        String ensureWallet = "MERGE dbo.Wallets AS t USING (SELECT ? AS user_id) AS s " +
-                "ON t.user_id=s.user_id WHEN NOT MATCHED THEN INSERT(user_id,balance) VALUES(s.user_id,0);";
-        String insertTx = "INSERT INTO dbo.WalletTransactions(user_id,type,amount,status) VALUES(?, 'TOPUP', ?, 'PENDING');";
-        try (Connection c = DB.getConnection()) {
-            c.setAutoCommit(false);
-            try (PreparedStatement ps1 = c.prepareStatement(ensureWallet)) {
-                ps1.setInt(1, userId);
-                ps1.executeUpdate();
-            }
-            try (PreparedStatement ps2 = c.prepareStatement(insertTx, Statement.RETURN_GENERATED_KEYS)) {
-                ps2.setInt(1, userId);
-                ps2.setBigDecimal(2, amount);
-                ps2.executeUpdate();
-                try (ResultSet rs = ps2.getGeneratedKeys()) {
-                    c.commit();
-                    return rs.next() ? rs.getInt(1) : 0;
-                }
-            } catch (SQLException e) {
-                c.rollback();
-                throw e;
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /** Admin approve topup: move from PENDING -> APPROVED and increase balance. */
-    public void approveTopup(int txId) {
-        String select = "SELECT user_id, amount, status FROM dbo.WalletTransactions WHERE id=? WITH (UPDLOCK, HOLDLOCK)";
-        String updTx  = "UPDATE dbo.WalletTransactions SET status='APPROVED' WHERE id=?";
-        String upsertWallet = "MERGE dbo.Wallets AS t USING (SELECT ? AS user_id) AS s " +
-                "ON t.user_id=s.user_id WHEN MATCHED THEN UPDATE SET balance = t.balance + ? , updated_at=SYSUTCDATETIME() " +
-                "WHEN NOT MATCHED THEN INSERT(user_id,balance) VALUES(s.user_id, ?);";
-        try (Connection c = DB.getConnection()) {
-            c.setAutoCommit(false);
-            int userId; BigDecimal amount; String status;
-            try (PreparedStatement ps = c.prepareStatement(select)) {
-                ps.setInt(1, txId);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (!rs.next()) throw new SQLException("Topup not found");
-                    userId = rs.getInt("user_id");
-                    amount = rs.getBigDecimal("amount");
-                    status = rs.getString("status");
-                    if (!"PENDING".equals(status)) {
-                        c.rollback();
-                        return;
-                    }
-                }
-            }
-            try (PreparedStatement p1 = c.prepareStatement(updTx)) {
-                p1.setInt(1, txId);
-                p1.executeUpdate();
-            }
-            try (PreparedStatement p2 = c.prepareStatement(upsertWallet)) {
-                p2.setInt(1, userId);
-                p2.setBigDecimal(2, amount);
-                p2.setBigDecimal(3, amount);
-                p2.executeUpdate();
-            }
-            c.commit();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /** Pay order by wallet. Throws if insufficient funds. Idempotent: if already debited for order, no double charge. */
-    public void payOrderWithWallet(int userId, int orderId) {
-        String selOrder = "SELECT total_amount, status FROM dbo.Orders WHERE id=? AND user_id=? FOR UPDATE";
-        String selExisting = "SELECT 1 FROM dbo.WalletTransactions WHERE user_id=? AND ref_order_id=? AND type='DEBIT' AND status='APPROVED'";
-        String balSql = "SELECT balance FROM dbo.Wallets WITH (UPDLOCK, HOLDLOCK) WHERE user_id=?";
-        String insertTx = "INSERT INTO dbo.WalletTransactions(user_id,type,amount,status,ref_order_id) VALUES(?, 'DEBIT', ?, 'APPROVED', ?)";
-        String updateBal = "UPDATE dbo.Wallets SET balance = balance - ?, updated_at=SYSUTCDATETIME() WHERE user_id=?";
-        String setPaid = "UPDATE dbo.Orders SET status='PAID' WHERE id=?";
-        String insPay = "INSERT INTO dbo.Payments(order_id,provider,txn_id,amount,status,raw_payload) VALUES(?, 'WALLET', ?, ?, 'PAID', NULL)";
-        try (Connection c = DB.getConnection()) {
-            c.setAutoCommit(false);
-            java.math.BigDecimal amount;
-            try (PreparedStatement ps = c.prepareStatement(selOrder)) {
-                ps.setInt(1, orderId);
-                ps.setInt(2, userId);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (!rs.next()) throw new SQLException("Order not found");
-                    String st = rs.getString("status");
-                    amount = rs.getBigDecimal("total_amount");
-                    if ("PAID".equalsIgnoreCase(st)) { c.commit(); return; }
-                }
-            }
-            try (PreparedStatement ps = c.prepareStatement(selExisting)) {
-                ps.setInt(1, userId);
-                ps.setInt(2, orderId);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) { // already charged
-                        try (PreparedStatement psp = c.prepareStatement(setPaid)) {
-                            psp.setInt(1, orderId);
-                            psp.executeUpdate();
-                        }
-                        c.commit();
-                        return;
-                    }
-                }
-            }
-            java.math.BigDecimal balance = java.math.BigDecimal.ZERO;
-            try (PreparedStatement ps = c.prepareStatement(balSql)) {
-                ps.setInt(1, userId);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) balance = rs.getBigDecimal(1);
-                }
-            }
-            if (balance.compareTo(amount) < 0)
-                throw new RuntimeException("Insufficient wallet balance");
-
-            try (PreparedStatement p1 = c.prepareStatement(insertTx)) {
-                p1.setInt(1, userId);
-                p1.setBigDecimal(2, amount);
-                p1.setInt(3, orderId);
-                p1.executeUpdate();
-            }
-            try (PreparedStatement p2 = c.prepareStatement(updateBal)) {
-                p2.setBigDecimal(1, amount);
-                p2.setInt(2, userId);
-                p2.executeUpdate();
-            }
-            try (PreparedStatement p3 = c.prepareStatement(setPaid)) {
-                p3.setInt(1, orderId);
-                p3.executeUpdate();
-            }
-            try (PreparedStatement p4 = c.prepareStatement(insPay)) {
-                p4.setInt(1, orderId);
-                p4.setString(2, "WALLET#" + orderId + "-" + System.currentTimeMillis());
-                p4.setBigDecimal(3, amount);
-                p4.executeUpdate();
-            }
-            c.commit();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    
-        public void topup(int userId, BigDecimal amount, String description) {
-        String up = "UPDATE dbo.Users SET wallet_balance = wallet_balance + ? WHERE id=?";
-        String tx = "INSERT INTO dbo.WalletTransactions(user_id, type, amount, description) VALUES(?, 'TOPUP', ?, ?)";
-        try (Connection cn = DB.getConnection()) {
-            cn.setAutoCommit(false);
-            try (PreparedStatement ps1 = cn.prepareStatement(up);
-                 PreparedStatement ps2 = cn.prepareStatement(tx)) {
-                ps1.setBigDecimal(1, amount);
-                ps1.setInt(2, userId);
-                ps1.executeUpdate();
-
-                ps2.setInt(1, userId);
-                ps2.setBigDecimal(2, amount);
-                ps2.setString(3, description);
-                ps2.executeUpdate();
-
-                cn.commit();
-            } catch (SQLException ex) {
-                cn.rollback();
-                throw ex;
-            } finally {
-                cn.setAutoCommit(true);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public boolean payWithWallet(int userId, BigDecimal amount, String description) {
-        String check = "SELECT wallet_balance FROM dbo.Users WITH (UPDLOCK, ROWLOCK) WHERE id=?";
-        String dec = "UPDATE dbo.Users SET wallet_balance = wallet_balance - ? WHERE id=?";
-        String tx  = "INSERT INTO dbo.WalletTransactions(user_id, type, amount, description) VALUES(?, 'PAYMENT', ?, ?)";
-        try (Connection cn = DB.getConnection()) {
-            cn.setAutoCommit(false);
-            try (PreparedStatement psC = cn.prepareStatement(check)) {
-                psC.setInt(1, userId);
-                BigDecimal bal;
-                try (ResultSet rs = psC.executeQuery()) {
-                    if (!rs.next()) { cn.rollback(); return false; }
-                    bal = rs.getBigDecimal(1);
-                }
-                if (bal.compareTo(amount) < 0) { cn.rollback(); return false; }
-
-                try (PreparedStatement psD = cn.prepareStatement(dec);
-                     PreparedStatement psT = cn.prepareStatement(tx)) {
-                    psD.setBigDecimal(1, amount);
-                    psD.setInt(2, userId);
-                    psD.executeUpdate();
-
-                    psT.setInt(1, userId);
-                    psT.setBigDecimal(2, amount);
-                    psT.setString(3, description);
-                    psT.executeUpdate();
-
-                    cn.commit();
-                    return true;
-                }
-            } catch (SQLException ex) {
-                cn.rollback();
-                throw ex;
-            } finally {
-                cn.setAutoCommit(true);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        return list;
     }
 }
