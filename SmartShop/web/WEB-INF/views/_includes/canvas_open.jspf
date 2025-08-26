@@ -1,0 +1,9 @@
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<div class="canvas-page">
+  <div class="canvas card">
+    <c:if test="${not empty title}">
+      <h1 class="title">${title}</h1>
+    </c:if>
+    <c:if test="${not empty subtitle}">
+      <p class="subtitle">${subtitle}</p>
+    </c:if>

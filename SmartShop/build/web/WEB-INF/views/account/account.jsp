@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ include file="/WEB-INF/views/_includes/header.jspf" %>
+<%@ include file="/WEB-INF/views/_includes/canvas_open.jspf" %>
 <div class="container">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>Tài khoản của tôi</h2>
@@ -39,3 +40,4 @@
   </form>
   <a href="${pageContext.request.contextPath}/logout">Logout</a>
 </div>
+<%@ include file="/WEB-INF/views/_includes/canvas_close.jspf" %>

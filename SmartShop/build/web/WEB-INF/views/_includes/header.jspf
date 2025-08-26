@@ -7,104 +7,103 @@
 <!DOCTYPE html><html lang="vi"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="<c:url value='/assets/css/style.css'/>">
+<link rel="stylesheet" href="<c:url value='/assets/css/theme-white.css?v=2'/>">
 <style>
-    :root{
-      --red-1:#a41818; --red-2:#8f1717; --surface:#17181a; --chip:#222529;
-      --text:#e8e8e8; --muted:#b9b9b9; --accent:#0ea5e9;
-      --radius:18px; --radius-lg:26px;
-      --blue:#1976d2;--blue-600:#1565c0;--blue-700:#0d47a1
-    }
-    html,body{margin:0;background:#0f0f10;color:var(--text);
-      font:500 14px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-      a{color:var(--blue);text-decoration:none}
-  a:hover{color:var(--blue-700);text-decoration:none}
+  html{font-size:16.5px}
+  a{color:#1f6feb;text-decoration:none}
+  a:hover{color:#1557bf}
 
-    /* ====== HEADER ====== */
-    .topbar{
-      background: linear-gradient(180deg,var(--red-1),var(--red-2));
-      box-shadow: 0 2px 14px rgba(0,0,0,.35);
-    }
-    .topbar .inner{
-      max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:16px;
-      padding:5px 5px;
-    }
-    /* Logo */
-    .logo{display:flex;align-items:center;gap:8px;font-weight:800;letter-spacing:.2px}
-    .logo-badge{
-      display:inline-grid;grid-auto-flow:column;gap:4px;align-items:center
-    }
-    .badge{width:22px;height:22px;border-radius:6px;color:#fff;display:grid;place-items:center;font-weight:900}
-    .b1{background:#008cff}.b2{background:#ffa800}.b3{background:#2ecc40}
-    .logo small{opacity:.9}
+  .topbar{background:#fff;border-bottom:1px solid var(--border);box-shadow:0 1px 8px rgba(16,24,40,.06)}
+  .topbar .inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:16px;padding:8px 8px;min-height:64px}
 
-    /* Danh mục pill */
-    .cat-btn{
-      display:flex;align-items:center;gap:8px;background:#1b1d21;color:#fff;
-      padding:10px 16px;border-radius:var(--radius-lg);border:1px solid #2a2d33
-    }
-    .cat-btn svg{width:20px;height:20px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--text)}
+  .logo img{width:48px;height:48px;border-radius:12px}
 
-    /* Search */
-    .search{flex:1;display:flex;align-items:center}
-    .search-wrap{
-      position:relative;flex:1;background:#23262b;border:1px solid #343840;
-      border-radius:999px;display:flex;align-items:center;padding:10px 46px 10px 16px; width:500px
-    }
-    .search input{
-      flex:1;background:transparent;border:0;color:var(--text);outline:none;
-      font-size:14px
-    }
-    .search-btn{
-      position:absolute;right:6px;top:50%;transform:translateY(-50%);
-      width:32px;height:32px;border-radius:999px;border:0;background:#101114;
-      display:grid;place-items:center;color:#ff2a2a;cursor:pointer
-    }
-    .kw{display:flex;gap:14px;margin-top:6px;color:#e8e8e8;opacity:.9}
-    .kw a{color:#e8e8e8;opacity:.9}
-    .kw a:hover{opacity:1;text-decoration:underline}
+  .txt{height:44px;padding:10px 14px;border:1px solid var(--border);border-radius:12px;background:#fff;color:var(--text);outline-color:#1f6feb}
 
-    /* Account + Cart */
-    .right{display:flex;align-items:center;gap:14px}
-    .avatar{
-      width:40px;height:40px;border-radius:50%;background:#1b1d21;border:1px solid #2a2d33;
-      display:grid;place-items:center
-    }
-    .avatar:hover{color:var(--blue-700);text-decoration:blink}
-    .cart{
-      display:flex;align-items:center;gap:10px;background:#101114;color:#fff;
-      padding:10px 16px;border-radius:999px;border:1px solid #2a2d33
-    }
-    .cart svg,.avatar svg{width:20px;height:20px}
+  .search{flex:1;display:flex;align-items:center}
+  .search-wrap{position:relative;flex:1;max-width:560px;background:#fff;border:1px solid var(--border);border-radius:999px;display:flex;align-items:center;padding:10px 46px 10px 16px}
+  .search input{flex:1;background:transparent;border:0;color:var(--text);outline:none;font-size:1rem}
+  .search-btn{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:999px;border:0;background:#f6f8fb;display:grid;place-items:center;color:#1f6feb;cursor:pointer}
+  .search-btn img{width:16px;height:16px}
 
-    /* ====== Password toggle (giữ nguyên logic toàn cục) ====== */
-    .pw-toggle{margin-left:-22px;margin-right:10px; background:transparent;border:0;padding:2px;cursor:pointer;vertical-align:middle}
-    .pw-toggle svg{width:15px;height:15px}
-    .pw-toggle .eye-off{display:none}
-    .pw-toggle[data-show="1"] .eye-open{display:none}
-    .pw-toggle[data-show="1"] .eye-off{display:inline}
-    /* Ẩn eye mặc định của Edge/IE */
-    input[type=password]::-ms-reveal,
-    input[type=password]::-ms-clear,
-    input::-ms-reveal,input::-ms-clear{display:none}
-    
-      button{padding:6px 12px;border:1px solid var(--blue);background:var(--blue);color:#fff;cursor:pointer}
-  button:hover{background:var(--blue-600);border-color:var(--blue-600)}
-  select.txt, input.txt{border:1px solid var(--blue);outline-color:var(--blue)}
-  </style>
+  .right{display:flex;align-items:center;gap:12px}
+  .cart1,.avatar1{display:flex;align-items:center;gap:10px;background:#fff;color:var(--text);padding:10px 16px;border-radius:999px;border:1px solid var(--border);height:44px}
+  .cart1 svg,.avatar1 svg{width:20px;height:20px}
+
+/* wrapper ô mật khẩu */
+.pw-field{
+  position: relative;
+  display: inline-block;      /* co đúng bằng chiều rộng input */
+  max-width: 100%;
+}
+
+/* đặt width ở input (hoặc để input: width:100% nếu .form-col đã giới hạn chiều rộng) */
+.pw-field .form-input{
+
+  box-sizing: border-box;
+  padding-right: 40px;        /* chừa chỗ cho nút */
+}
+
+/* nút nằm trong góc phải input */
+.pw-toggle{
+position: relative;
+  left: 460px;
+  bottom: 24px;
+  transform: translateY(-50%);
+  margin: 0;
+  background: transparent;
+  border: 0;
+  padding: 2px;
+  cursor: pointer;
+  z-index: 1;
+}
+.pw-toggle svg{width:15px;height:15px}
+.pw-toggle .eye-off{display:none}
+.pw-toggle[data-show="1"] .eye-open{display:none}
+.pw-toggle[data-show="1"] .eye-off{display:inline}
+
+/* Ẩn nút clear Edge/IE */
+input[type=password]::-ms-reveal,
+input[type=password]::-ms-clear,
+input::-ms-reveal,
+input::-ms-clear{display:none}
+  
+    /* Dropdown avatar */
+  .user-menu{position:relative}
+  .user-menu .menu{
+    position:absolute;top:calc(100% + 8px);right:0;min-width:220px;
+    background:#fff;border:1px solid var(--border);border-radius:12px;
+    box-shadow:var(--shadow);padding:8px;display:none;z-index:1100
+  }
+  .user-menu .menu.open{display:block}
+  .user-menu .menu a{
+    display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;
+    color:var(--text);text-decoration:none
+  }
+  .user-menu .menu a:hover{background:var(--muted)}
+  .user-menu .menu hr{border:0;border-top:1px solid var(--border);margin:6px 0}
+  .menu-icon{width:18px;height:18px;flex:0 0 18px}
+  
+  /* Password toggle dùng chung */
+  .pw-toggle{margin-left:-22px;margin-right:10px;background:transparent;border:0;padding:2px;cursor:pointer;vertical-align:middle}
+  .pw-toggle svg{width:15px;height:15px}
+  .pw-toggle .eye-off{display:none}
+  .pw-toggle[data-show="1"] .eye-open{display:none}
+  .pw-toggle[data-show="1"] .eye-off{display:inline}
+  input[type=password]::-ms-reveal,input[type=password]::-ms-clear,input::-ms-reveal,input::-ms-clear{display:none}
+
+</style>
 </head>
 <body>
 
 <header class="topbar">
   <div class="inner">
     <!-- Logo -->
-    <a href="${pageContext.request.contextPath}/home" class="logo" aria-label="SmartShop">
-      <span class="logo-badge">
-        <img style="width:50px;height:50px" src="<c:url value='/assets/img/smartshop.png'/>" alt="logo">
-      </span>
-      
+    <c:url var="homeUrl" value="/home"/>
+    <a href="${homeUrl}" class="logo" aria-label="SmartShop">
+      <img src="<c:url value='/assets/img/smartshop.png'/>" alt="logo">
     </a>
-      
-    
 
     <!-- Danh mục -->
     <c:set var="cats" value="${empty categories ? headerCategories : categories}"/>
@@ -118,9 +117,7 @@
               <c:param name="q" value="${param.q}"/>
             </c:if>
           </c:url>
-          <option value="${catUrl}" <c:if test="${param.categoryId == c.id}">selected</c:if>>
-            ${c.name}
-          </option>
+          <option value="${catUrl}" <c:if test="${param.categoryId == c.id}">selected</c:if>>${c.name}</option>
         </c:forEach>
       </select>
     </c:if>
@@ -128,65 +125,96 @@
     <!-- Search -->
     <div class="search">
       <form class="search-wrap" method="get" action="${pageContext.request.contextPath}/products">
-        <input name="q" placeholder="Nhập tên điện thoại, máy tính, ... cần tìm" value="${param.q}">
+        <input name="q" placeholder="Nhập tên điện thoại, máy tính, ... cần tìm" value="${param.q}" style="width:400px">
         <c:if test="${not empty param.categoryId}">
           <input type="hidden" name="categoryId" value="${param.categoryId}"/>
         </c:if>
         <button type="submit" class="search-btn" aria-label="Tìm kiếm">
-          <img style="width:15px;height:15px; margin-left: -2px" src="<c:url value='/assets/img/search.png'/>" alt="search">
+          <img src="<c:url value='/assets/img/search.png'/>" alt="search">
         </button>
       </form>
     </div>
 
     <!-- Right side -->
     <div class="right">
-      <a class="cart" href="${pageContext.request.contextPath}/cart">
+      <c:url var="cartUrl" value="/cart"/>
+      <a class="cart1" href="${cartUrl}" style="width:130px">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zM7.16 14h9.45a2 2 0 0 0 1.94-1.52L20.88 6H6.21l-.94-4H2v2h2l3.6 14h12v-2H7.16z"/>
         </svg>
         Giỏ hàng
       </a>
-      <a class="avatar" href="${pageContext.request.contextPath}<c:choose><c:when test='${not empty sessionScope.auth}'>/login</c:when><c:otherwise>/account</c:otherwise></c:choose>">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path style="color: white" d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5z"/>
-        </svg>
-      </a>
-      
+
+      <!-- Avatar + Dropdown -->
+      <c:set var="isLoggedIn"
+             value="${not empty sessionScope.auth
+                     or not empty sessionScope.user
+                     or not empty sessionScope.account
+                     or not empty sessionScope.acc
+                     or not empty sessionScope.loginUser
+                     or not empty sessionScope.uid
+                     or not empty sessionScope.username}"/>
+
+      <c:choose>
+        <c:when test="${isLoggedIn}">
+          <div class="user-menu" id="userMenu">
+            <button type="button" class="avatar1" id="avatarBtn" aria-haspopup="true" aria-expanded="false">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5z"/>
+              </svg>
+            </button>
+            <div class="menu" id="userDropdown" role="menu" aria-label="User menu">
+              <a href="<c:url value='/account'/>"><svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5z"/></svg>Tài khoản</a>
+              <a href="<c:url value='/wallet'/>"><svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 7H3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h18V7zm-3 6h-5v-2h5v2z"/></svg>Ví SmartShop</a>
+              <a href="<c:url value='/transaction_history'/>"><svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18v2H3V5zm0 6h18v2H3v-2zm0 6h18v2H3v-2z"/></svg>Lịch sử</a>
+              <hr>
+              <a href="<c:url value='/logout'/>"><svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M10 17l5-5-5-5v3H3v4h7v3zM14 3h7v18h-7v-2h5V5h-5V3z"/></svg>Đăng xuất</a>
+            </div>
+          </div>
+        </c:when>
+        <c:otherwise>
+          <a class="avatar1" href="${pageContext.request.contextPath}/login">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5z"/>
+            </svg>
+          </a>
+        </c:otherwise>
+      </c:choose>
     </div>
   </div>
-
-
 </header>
 <main>
-
 
 <script>
 document.addEventListener('DOMContentLoaded', function(){
   document.querySelectorAll('input[type="password"]').forEach(function(input){
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'pw-toggle';
-    btn.setAttribute('aria-label','Hiện/Ẩn mật khẩu');
-    btn.dataset.show = '0';
-    btn.innerHTML = `
-      <!-- eye mở -->
-      <svg class="eye-open" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M12 5c5.5 0 9.5 4.5 10.5 7-1 2.5-5 7-10.5 7S2.5 14.5 1.5 12C2.5 9.5 6.5 5 12 5zm0 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/>
-      </svg>
-      <!-- eye gạch -->
-      <svg class="eye-off" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M3 4.3 4.3 3 21 19.7 19.7 21l-3.2-3.2A12 12 0 0 1 12 19C6.5 19 2.5 14.5 1.5 12c.5-1.2 1.7-3 3.4-4.7L3 4.3zM12 5c5.5 0 9.5 4.5 10.5 7-.4.9-1.2 2.2-2.3 3.5l-2.6-2.6a4 4 0 0 0-5.5-5.5L10 5.3c.6-.2 1.3-.3 2-.3z"/>
-      </svg>
-    `;
-    btn.addEventListener('click', function(e){
+    const btn=document.createElement('button');
+    btn.type='button';btn.className='pw-toggle';btn.setAttribute('aria-label','Hiện/Ẩn mật khẩu');btn.dataset.show='0';
+    btn.innerHTML=`<svg class="eye-open" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5c5.5 0 9.5 4.5 10.5 7-1 2.5-5 7-10.5 7S2.5 14.5 1.5 12C2.5 9.5 6.5 5 12 5zm0 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/></svg>
+    <svg class="eye-off" viewBox="0 0 24 24" fill="currentColor"><path d="M3 4.3 4.3 3 21 19.7 19.7 21l-3.2-3.2A12 12 0 0 1 12 19C6.5 19 2.5 14.5 1.5 12c.5-1.2 1.7-3 3.4-4.7L3 4.3zM12 5c5.5 0 9.5 4.5 10.5 7-.4.9-1.2 2.2-2.3 3.5l-2.6-2.6a4 4 0 0 0-5.5-5.5L10 5.3c.6-.2 1.3-.3 2-.3z"/></svg>`;
+    btn.addEventListener('click',function(e){
       e.preventDefault();
-      const show = input.type === 'password';
-      input.type = show ? 'text' : 'password';
-      btn.dataset.show = show ? '1' : '0';
-      input.focus({preventScroll:true});
-      try{ const l=input.value.length; input.setSelectionRange(l,l); }catch(_){}
+      const show=input.type==='password'; input.type=show?'text':'password'; btn.dataset.show=show?'1':'0';
+      input.focus({preventScroll:true}); try{const l=input.value.length; input.setSelectionRange(l,l);}catch(_){}
     });
-    input.insertAdjacentElement('afterend', btn);
+    input.insertAdjacentElement('afterend',btn);
   });
 });
+
+  // Toggle dropdown avatar
+  const btn = document.getElementById('avatarBtn');
+  const menu = document.getElementById('userDropdown');
+  if(btn && menu){
+    const close = ()=>{menu.classList.remove('open'); btn.setAttribute('aria-expanded','false');};
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      const open = !menu.classList.contains('open');
+      if(open){ menu.classList.add('open'); btn.setAttribute('aria-expanded','true'); }
+      else{ close(); }
+    });
+    document.addEventListener('click', function(e){
+      if(!menu.contains(e.target) && e.target!==btn){ close(); }
+    });
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
+  }
 </script>

@@ -2,6 +2,14 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/src/java/com/smartshop/model/Product.java</file>
+            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/src/java/com/smartshop/servlet/admin/ProductAdminServlet.java</file>
+            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/src/java/com/smartshop/servlet/admin/ProductPricingAdminServlet.java</file>
+            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/web/WEB-INF/views/admin/products.jsp</file>
+            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/src/java/com/smartshop/dao/ProductPricingDAO.java</file>
+            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/web/WEB-INF/web.xml</file>
+            <file>file:/C:/Users/VuDino/OneDrive/Documents/GitHub/PRJ301_G5/SmartShop/web/WEB-INF/views/admin/product_form.jsp</file>
+        </group>
     </open-files>
 </project-private>

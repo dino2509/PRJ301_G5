@@ -1,0 +1,141 @@
+/* theme-white.css v2 — SmartShop white theme, override quyết liệt */
+
+/* ========= Reset + base ========= */
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+html{font-size:16.5px}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  background:#ffffff!important;
+  color:#111!important;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ========= Tokens ========= */
+:root{
+  --bg:#ffffff;
+  --surface:#ffffff;
+  --muted:#f6f8fb;
+  --border:#e6e9ef;
+  --text:#111111;
+  --text-muted:#616773;
+  --primary:#1f6feb;
+  --primary-600:#1b63d4;
+  --primary-700:#1557bf;
+  --danger:#e5484d;
+  --success:#1a7f37;
+  --shadow:0 10px 30px rgba(16,24,40,.08), 0 2px 8px rgba(16,24,40,.06);
+  --radius:12px;
+}
+
+/* ========= Layout ========= */
+.container{max-width:1200px;margin-inline:auto;padding-inline:16px}
+.section{padding:24px 0}
+
+/* ========= Header (ép trắng, chặn CSS cũ màu đỏ) ========= */
+.site-header,
+header.site-header,
+.header,
+header{
+  background:#fff!important;
+  color:var(--text)!important;
+  border-bottom:1px solid var(--border)!important;
+}
+.site-header .nav{display:flex;align-items:center;gap:16px;height:64px}
+.site-header .brand{font-weight:700;font-size:1.125rem;color:var(--text)!important;text-decoration:none}
+.site-header .spacer{flex:1}
+.site-header .search{max-width:560px;flex:1}
+.site-header input[type="search"]{
+  width:100%;height:44px;padding:10px 14px;
+  border:1px solid var(--border);border-radius:12px;background:#fff;color:var(--text)
+}
+.site-header a,.site-header {color:var(--text)!important}
+
+/* ========= Cards / Panels (ép nền trắng cho các box cũ) ========= */
+.card,.box,.panel,.auth-card,.form-card{
+  background:var(--surface)!important;border:1px solid var(--border)!important;
+  border-radius:16px;box-shadow:var(--shadow)
+}
+.card.pad{padding:16px}
+
+/* ========= Bảng ========= */
+.table{width:100%;border-collapse:separate;border-spacing:0;font-size:0.95rem}
+.table th,.table td{padding:14px 16px;border-bottom:1px solid var(--border);vertical-align:middle}
+.table th{background:var(--muted);text-align:left;color:var(--text)}
+.table tr:hover td{background:#fbfcff}
+
+/* ========= Nút ========= */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  height:44px;padding:0 16px;border-radius:12px;
+  border:1px solid var(--border);background:#fff;color:var(--text);
+  cursor:pointer;text-decoration:none;font-weight:600
+}
+.btn:hover{box-shadow:0 1px 0 rgba(16,24,40,.08)}
+.btn.primary{background:var(--primary);color:#fff;border-color:transparent}
+.btn.primary:hover{background:var(--primary-600)}
+.btn.danger{background:var(--danger);color:#fff;border-color:transparent}
+.btn.success{background:var(--success);color:#fff;border-color:transparent}
+.btn.ghost{background:transparent}
+
+/* ========= Input ========= */
+input[type="text"],input[type="email"],input[type="password"],
+input[type="tel"],input[type="number"],input[type="search"],
+select,textarea,.input{
+  width:100%;height:44px;padding:10px 14px;
+  border:1px solid var(--border);border-radius:12px;
+  background:#fff;color:var(--text);font-size:1rem
+}
+textarea{min-height:120px}
+input:focus,select:focus,textarea:focus{
+  outline:2px solid color-mix(in oklab, var(--primary) 35%, white);
+  border-color:var(--primary)
+}
+.field{display:grid;gap:8px;margin-bottom:14px}
+.field label{font-size:0.9rem;color:var(--text-muted);font-weight:600}
+
+/* ========= Badge ========= */
+.badge{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:999px;background:var(--muted);border:1px solid var(--border);font-size:12.5px;color:var(--text-muted)}
+
+/* ========= Grid sản phẩm ========= */
+.products{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:18px}
+.product-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+.product-card img{width:100%;height:190px;object-fit:cover;background:var(--muted)}
+.product-card .meta{padding:12px}
+.price{font-weight:800;color:var(--text);font-size:1.05rem}
+
+/* ========= Pagination ========= */
+.pagination{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:18px}
+.pagination .page{min-width:38px;height:38px;border:1px solid var(--border);border-radius:10px;display:grid;place-items:center;background:#fff;color:var(--text)}
+.pagination .page.active{background:var(--primary);color:#fff;border-color:transparent}
+
+/* ========= Alerts ========= */
+.alert{padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:var(--muted)}
+.alert.error{background:color-mix(in oklab, var(--danger) 8%, white);border-color:color-mix(in oklab, var(--danger) 30%, white)}
+.alert.success{background:color-mix(in oklab, var(--success) 8%, white);border-color:color-mix(in oklab, var(--success) 30%, white)}
+
+/* ========= Canvas giữa màn hình cho login/account/... ========= */
+.canvas-page{min-height:100dvh;display:grid;place-items:center;background:var(--bg);padding:24px}
+.canvas{
+  width:100%;max-width:520px;background:var(--surface);color:var(--text);
+  border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow);padding:22px
+}
+.canvas .title{margin:0 0 8px 0;font-size:1.35rem;font-weight:800}
+.canvas .subtitle{margin:0 0 16px 0;color:var(--text-muted);font-size:0.95rem}
+.canvas form .field{margin-bottom:12px}
+.canvas form .btn{width:100%;justify-content:center}
+.canvas .hint{font-size:0.8rem;color:var(--text-muted)}
+.canvas .link{color:var(--primary);text-decoration:none}
+
+/* ========= Footer ========= */
+.site-footer{border-top:1px solid var(--border);background:#fff;color:var(--text-muted);padding:16px 0}
+
+/* ========= Tiện ích ========= */
+.center{display:grid;place-items:center}
+.hidden{display:none}
+
+/* ========= “Fix cứng” các nền tối còn sót (nếu CSS cũ vẫn áp) ========= */
+.bg-dark,.dark-bg,.auth-bg{background:#fff!important;color:var(--text)!important}
+.text-light{color:var(--text)!important}

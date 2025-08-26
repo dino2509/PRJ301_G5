@@ -17,7 +17,7 @@
   <input name="full_name" placeholder="full name">
   <input name="phone" placeholder="phone">
   <input name="password" placeholder="password" required>
-  <select name="role"><option value="USER">USER</option><option value="ADMIN">ADMIN</option></select>
+  <select style="width:120px" name="role"><option value="USER">USER</option><option value="ADMIN">ADMIN</option></select>
   <button type="submit">Add</button>
 </form>
 <h3>List</h3>
@@ -30,16 +30,16 @@
         <form method="post" style="display:inline-block">
           <input type="hidden" name="action" value="update"/>
           <input type="hidden" name="id" value="${u.id}"/>
-          <input name="email" value="${u.email}"/>
-          <input name="full_name" value="${u.fullName}"/>
-          <input name="phone" value="${u.phone}"/>
-          <select name="status"><option ${u.status=='ACTIVE'?'selected':''}>ACTIVE</option><option ${u.status=='LOCKED'?'selected':''}>LOCKED</option></select>
-          <button>Save</button>
+          <input style="width:280px; font-size: 17px" name="email" value="${u.email}"/>
+          <input style="width:160px; font-size: 17px" name="full_name" value="${u.fullName}"/>
+          <input style="width:120px; font-size: 17px" name="phone" value="${u.phone}"/>
+          <select style="width: 120px" name="status"><option style="font-size: 15px" ${u.status=='ACTIVE'?'selected':''}>ACTIVE</option><option style="font-size: 15px" ${u.status=='LOCKED'?'selected':''}>LOCKED</option></select>
+          <button style="font-size:17px">Save</button>
         </form>
         <form method="post" style="display:inline-block" onsubmit="return confirm('Delete?')">
           <input type="hidden" name="action" value="delete"/>
           <input type="hidden" name="id" value="${u.id}"/>
-          <button>Delete</button>
+          <button>✖</button>
         </form>
       </td>
     </tr>

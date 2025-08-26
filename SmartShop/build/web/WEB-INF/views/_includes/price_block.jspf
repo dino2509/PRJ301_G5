@@ -1,0 +1,38 @@
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%-- Yêu c?u trang cha ?ã set locale, ví d?: <fmt:setLocale value="vi_VN" scope="session"/> --%>
+
+<c:set var="origPrice" value="${p.price}" />
+<c:set var="salePrice" value="${p.salePrice != null ? p.salePrice : p.sale_price}" />
+
+<c:choose>
+  <c:when test="${salePrice != null && salePrice gt 0 && salePrice lt origPrice}">
+    <div class="price">
+      <div class="old" style="text-decoration:line-through;opacity:.7">
+        <fmt:formatNumber value="${origPrice}" type="currency"/>
+      </div>
+      <div class="new" style="font-weight:600">
+        <fmt:formatNumber value="${salePrice}" type="currency"/>
+        <span class="sale" style="margin-left:6px;color:#c00;">
+          <c:choose>
+            <c:when test="${not empty p.sale && p.sale gt 0}">
+              sale (-${p.sale}%)
+            </c:when>
+            <c:otherwise>
+              <c:set var="pct" value="${(origPrice - salePrice) * 100.0 / origPrice}" />
+              <fmt:formatNumber var="pct0" value="${pct}" maxFractionDigits="0"/>
+              sale (-${pct0}%)
+            </c:otherwise>
+          </c:choose>
+        </span>
+      </div>
+    </div>
+  </c:when>
+  <c:otherwise>
+    <div class="price">
+      <div class="new" style="font-weight:600">
+        <fmt:formatNumber value="${origPrice}" type="currency"/>
+      </div>
+    </div>
+  </c:otherwise>
+</c:choose>

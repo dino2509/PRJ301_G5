@@ -228,6 +228,27 @@
   <url-pattern>/transcation_history</url-pattern>
 </servlet-mapping>
 
+<servlet>
+  <servlet-name>WalletBalanceServlet</servlet-name>
+  <servlet-class>com.smartshop.api.WalletBalanceServlet</servlet-class>
+</servlet>
+
+<servlet-mapping>
+  <servlet-name>WalletBalanceServlet</servlet-name>
+  <url-pattern>/api/wallet/balance</url-pattern>
+</servlet-mapping>
+
+<!-- Pricing admin servlet -->
+<servlet>
+  <servlet-name>ProductPricingAdminServlet</servlet-name>
+  <servlet-class>com.smartshop.servlet.admin.ProductPricingAdminServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+  <servlet-name>ProductPricingAdminServlet</servlet-name>
+  <url-pattern>/admin/products/pricing</url-pattern>
+</servlet-mapping>
+
+
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>

@@ -1,5 +1,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/views/_includes/header.jspf" %>
+<%@ include file="/WEB-INF/views/_includes/canvas_open.jspf" %>
 <div class="container">
   <h2>Đặt lại mật khẩu</h2>
   <p style="color:green">${msg}</p>
@@ -29,3 +30,4 @@
     <button type="submit" class="btn btn-primary">Cập nhật</button>
   </form>
 </div>
+<%@ include file="/WEB-INF/views/_includes/canvas_close.jspf" %>
